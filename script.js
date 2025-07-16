@@ -1,140 +1,145 @@
 // script.js
 
-// Datos de la malla curricular (simulados, ya que el JSON real se cargaría aquí)
-// En un entorno real, cargarías esto desde un archivo JSON o una API.
-// Para este ejemplo, usaremos el contenido del JSON proporcionado.
+// Datos de la malla curricular con créditos y campos adicionales
 const mallaCurricular = [
     {
         "año": 1,
         "periodo": 1,
         "materias": [
-            {"id": "70af1bf1-5dd4-49a3-ad89-a7f12e384630", "nombre": "INTRODUCCIÓN AL DERECHO I", "tipo": "ninguno", "requisitos": []},
-            {"id": "b6788202-1dfa-493c-8c30-82446948e988", "nombre": "INTRODUCCIÓN A LA ECONOMÍA", "tipo": "ninguno", "requisitos": []},
-            {"id": "57704421-9333-465f-8068-9ef2d3836e7e", "nombre": "HISTORIA DEL DERECHO I", "tipo": "ninguno", "requisitos": []},
-            {"id": "db3fff99-ae5d-49e9-878b-d7b1b45184fe", "nombre": "FILOSOFÍA MORAL", "tipo": "ninguno", "requisitos": []},
-            {"id": "04e79fd6-1c17-4eb5-b71e-2a32b2437ab1", "nombre": "ELECTIVO ABIERTO", "tipo": "ninguno", "requisitos": []},
-            {"id": "73ffac60-5eb7-4dc0-8f30-1122408b8f5b", "nombre": "FORMACIÓN COMPLEMENTARIA (LIBRE/CFG)", "tipo": "ninguno", "requisitos": []},
-            {"id": "29dcefe9-3dea-4773-bc61-563a0afb47b0", "nombre": "INGLÉS I", "tipo": "ninguno", "requisitos": []}
+            {"id": "70af1bf1-5dd4-49a3-ad89-a7f12e384630", "nombre": "INTRODUCCIÓN AL DERECHO I", "tipo": "ninguno", "requisitos": [], "creditos": 5},
+            {"id": "b6788202-1dfa-493c-8c30-82446948e988", "nombre": "INTRODUCCIÓN A LA ECONOMÍA", "tipo": "ninguno", "requisitos": [], "creditos": 5},
+            {"id": "57704421-9333-465f-8068-9ef2d3836e7e", "nombre": "HISTORIA DEL DERECHO I", "tipo": "ninguno", "requisitos": [], "creditos": 5},
+            {"id": "db3fff99-ae5d-49e9-878b-d7b1b45184fe", "nombre": "FILOSOFÍA MORAL", "tipo": "ninguno", "requisitos": [], "creditos": 5},
+            {"id": "04e79fd6-1c17-4eb5-b71e-2a32b2437ab1", "nombre": "ELECTIVO ABIERTO", "tipo": "electivo", "requisitos": [], "creditos": 4},
+            {"id": "73ffac60-5eb7-4dc0-8f30-1122408b8f5b", "nombre": "FORMACIÓN COMPLEMENTARIA (LIBRE/CFG)", "tipo": "cfg", "requisitos": [], "creditos": 2},
+            {"id": "29dcefe9-3dea-4773-bc61-563a0afb47b0", "nombre": "INGLÉS I", "tipo": "ninguno", "requisitos": [], "creditos": 3}
         ]
     },
     {
         "año": 1,
         "periodo": 2,
         "materias": [
-            {"id": "ae543c67-ba78-4191-ae06-05b2dbf71523", "nombre": "INTRODUCCIÓN AL DERECHO II", "tipo": "ninguno", "requisitos": ["70af1bf1-5dd4-49a3-ad89-a7f12e384630"]},
-            {"id": "3da9d5fe-507d-485b-b6e1-1dcd07920ce6", "nombre": "DERECHO CIVIL I", "tipo": "ninguno", "requisitos": ["70af1bf1-5dd4-49a3-ad89-a7f12e384630"]},
-            {"id": "74dd5a3e-cd91-4e8f-823d-caaef8312f3a", "nombre": "HISTORIA DEL DERECHO II", "tipo": "ninguno", "requisitos": ["57704421-9333-465f-8068-9ef2d3836e7e"]},
-            {"id": "4ebea9a6-3ead-420d-a373-de02e5d08a49", "nombre": "DERECHO CONSTITUCIONAL I", "tipo": "ninguno", "requisitos": ["70af1bf1-5dd4-49a3-ad89-a7f12e384630"]},
-            {"id": "be7492bf-378f-4390-a58b-d3076a14a74e", "nombre": "ÁREA ESPECIALIZADA DERECHO ECONÓMICO I", "tipo": "ninguno", "requisitos": ["b6788202-1dfa-493c-8c30-82446948e988"]},
-            {"id": "e2b97a83-c86a-4bf6-86e6-2f179eec1d34", "nombre": "FORMACIÓN COMPLEMENTARIA (LIBRE/CFG)", "tipo": "ninguno", "requisitos": []},
-            {"id": "68a988d7-f8e3-4abe-898d-32c33370fdf3", "nombre": "INGLÉS II", "tipo": "ninguno", "requisitos": ["29dcefe9-3dea-4773-bc61-563a0afb47b0"]}
+            {"id": "ae543c67-ba78-4191-ae06-05b2dbf71523", "nombre": "INTRODUCCIÓN AL DERECHO II", "tipo": "ninguno", "requisitos": ["70af1bf1-5dd4-49a3-ad89-a7f12e384630"], "creditos": 5},
+            {"id": "3da9d5fe-507d-485b-b6e1-1dcd07920ce6", "nombre": "DERECHO CIVIL I", "tipo": "ninguno", "requisitos": ["70af1bf1-5dd4-49a3-ad89-a7f12e384630"], "creditos": 5},
+            {"id": "74dd5a3e-cd91-4e8f-823d-caaef8312f3a", "nombre": "HISTORIA DEL DERECHO II", "tipo": "ninguno", "requisitos": ["57704421-9333-465f-8068-9ef2d3836e7e"], "creditos": 5},
+            {"id": "4ebea9a6-3ead-420d-a373-de02e5d08a49", "nombre": "DERECHO CONSTITUCIONAL I", "tipo": "ninguno", "requisitos": ["70af1bf1-5dd4-49a3-ad89-a7f12e384630"], "creditos": 5},
+            {"id": "be7492bf-378f-4390-a58b-d3076a14a74e", "nombre": "ÁREA ESPECIALIZADA DERECHO ECONÓMICO I", "tipo": "ninguno", "requisitos": ["b6788202-1dfa-493c-8c30-82446948e988"], "creditos": 4},
+            {"id": "e2b97a83-c86a-4bf6-86e6-2f179eec1d34", "nombre": "FORMACIÓN COMPLEMENTARIA (LIBRE/CFG)", "tipo": "cfg", "requisitos": [], "creditos": 2},
+            {"id": "68a988d7-f8e3-4abe-898d-32c33370fdf3", "nombre": "INGLÉS II", "tipo": "ninguno", "requisitos": ["29dcefe9-3dea-4773-bc61-563a0afb47b0"], "creditos": 2}
         ]
     },
     {
         "año": 2,
         "periodo": 1,
         "materias": [
-            {"id": "f1bbfd9a-32b5-4b41-962a-6023d83c270d", "nombre": "Derecho Procesal I", "tipo": "ninguno", "requisitos": ["ae543c67-ba78-4191-ae06-05b2dbf71523"]},
-            {"id": "8b82d0d2-5677-450b-9be7-e3455d13216a", "nombre": "DERECHO CIVIL II", "tipo": "ninguno", "requisitos": ["ae543c67-ba78-4191-ae06-05b2dbf71523", "3da9d5fe-507d-485b-b6e1-1dcd07920ce6"]},
-            {"id": "8954f6b0-caf2-4794-8b65-b223b934b2f9", "nombre": "DERECHO INTERNACIONAL PÚBLICO", "tipo": "ninguno", "requisitos": ["ae543c67-ba78-4191-ae06-05b2dbf71523", "4ebea9a6-3ead-420d-a373-de02e5d08a49"]},
-            {"id": "fc69b895-b372-4296-baef-24ffe6612715", "nombre": "DERECHO CONSTITUCIONAL II", "tipo": "ninguno", "requisitos": ["4ebea9a6-3ead-420d-a373-de02e5d08a49", "ae543c67-ba78-4191-ae06-05b2dbf71523"]},
-            {"id": "61139cb1-0f3d-4acf-9645-c14cae5412b3", "nombre": "ELECTIVO ABIERTO", "tipo": "ninguno", "requisitos": []},
-            {"id": "ebdfe08c-dc3e-4502-bb8f-4cbccc4c9f7a", "nombre": "FORMACIÓN COMPLEMENTARIA (LIBRE/CFG)", "tipo": "ninguno", "requisitos": []},
-            {"id": "5cf09280-96fb-45f2-9ecd-acb188e203ea", "nombre": "INGLÉS III", "tipo": "ninguno", "requisitos": ["68a988d7-f8e3-4abe-898d-32c33370fdf3"]}
+            {"id": "f1bbfd9a-32b5-4b41-962a-6023d83c270d", "nombre": "Derecho Procesal I", "tipo": "ninguno", "requisitos": ["ae543c67-ba78-4191-ae06-05b2dbf71523"], "creditos": 5},
+            {"id": "8b82d0d2-5677-450b-9be7-e3455d13216a", "nombre": "DERECHO CIVIL II", "tipo": "ninguno", "requisitos": ["ae543c67-ba78-4191-ae06-05b2dbf71523", "3da9d5fe-507d-485b-b6e1-1dcd07920ce6"], "creditos": 5},
+            {"id": "8954f6b0-caf2-4794-8b65-b223b934b2f9", "nombre": "DERECHO INTERNACIONAL PÚBLICO", "tipo": "ninguno", "requisitos": ["ae543c67-ba78-4191-ae06-05b2dbf71523", "4ebea9a6-3ead-420d-a373-de02e5d08a49"], "creditos": 5},
+            {"id": "fc69b895-b372-4296-baef-24ffe6612715", "nombre": "DERECHO CONSTITUCIONAL II", "tipo": "ninguno", "requisitos": ["4ebea9a6-3ead-420d-a373-de02e5d08a49", "ae543c67-ba78-4191-ae06-05b2dbf71523"], "creditos": 5},
+            {"id": "61139cb1-0f3d-4acf-9645-c14cae5412b3", "nombre": "ELECTIVO ABIERTO", "tipo": "electivo", "requisitos": [], "creditos": 4},
+            {"id": "ebdfe08c-dc3e-4502-bb8f-4cbccc4c9f7a", "nombre": "FORMACIÓN COMPLEMENTARIA (LIBRE/CFG)", "tipo": "cfg", "requisitos": [], "creditos": 2},
+            {"id": "5cf09280-96fb-45f2-9ecd-acb188e203ea", "nombre": "INGLÉS III", "tipo": "ninguno", "requisitos": ["68a988d7-f8e3-4abe-898d-32c33370fdf3"], "creditos": 2}
         ]
     },
     {
         "año": 2,
         "periodo": 2,
         "materias": [
-            {"id": "875c1b3b-a34a-4799-8292-4072979c5db8", "nombre": "DERECHO PROCESAL II", "tipo": "ninguno", "requisitos": ["f1bbfd9a-32b5-4b41-962a-6023d83c270d"]},
-            {"id": "969ba8d4-d3cc-4b1f-9311-c5d19eda7f80", "nombre": "DERECHO CIVIL III", "tipo": "ninguno", "requisitos": ["8b82d0d2-5677-450b-9be7-e3455d13216a"]},
-            {"id": "d8150bb7-7df4-4b52-8e54-365606b954e9", "nombre": "DERECHO PENAL I", "tipo": "ninguno", "requisitos": ["fc69b895-b372-4296-baef-24ffe6612715"]},
-            {"id": "62ed0e8c-900f-47d5-b81e-6ca72e8e3d80", "nombre": "DERECHO CONSTITUCIONAL III", "tipo": "ninguno", "requisitos": ["fc69b895-b372-4296-baef-24ffe6612715", "f1bbfd9a-32b5-4b41-962a-6023d83c270d"]},
-            {"id": "ba649b1a-fb22-4d1d-9a37-390f1a1b7f99", "nombre": "REGULACIÓN DE MERCADOS", "tipo": "ninguno", "requisitos": ["be7492bf-378f-4390-a58b-d3076a14a74e"]},
-            {"id": "6a41389a-ed5f-4762-bbf3-81a58eb05ab7", "nombre": "ÁREA ESPECIALIZADA DERECHOS HUMANOS", "tipo": "ninguno", "requisitos": ["74dd5a3e-cd91-4e8f-823d-caaef8312f3a"]},
-            {"id": "582b247a-c97d-4a6c-ae63-d8117f47d764", "nombre": "INGLÉS IV", "tipo": "ninguno", "requisitos": ["5cf09280-96fb-45f2-9ecd-acb188e203ea"]}
+            {"id": "875c1b3b-a34a-4799-8292-4072979c5db8", "nombre": "DERECHO PROCESAL II", "tipo": "ninguno", "requisitos": ["f1bbfd9a-32b5-4b41-962a-6023d83c270d"], "creditos": 5},
+            {"id": "969ba8d4-d3cc-4b1f-9311-c5d19eda7f80", "nombre": "DERECHO CIVIL III", "tipo": "ninguno", "requisitos": ["8b82d0d2-5677-450b-9be7-e3455d13216a"], "creditos": 5},
+            {"id": "d8150bb7-7df4-4b52-8e54-365606b954e9", "nombre": "DERECHO PENAL I", "tipo": "ninguno", "requisitos": ["fc69b895-b372-4296-baef-24ffe6612715"], "creditos": 5},
+            {"id": "62ed0e8c-900f-47d5-b81e-6ca72e8e3d80", "nombre": "DERECHO CONSTITUCIONAL III", "tipo": "ninguno", "requisitos": ["fc69b895-b372-4296-baef-24ffe6612715", "f1bbfd9a-32b5-4b41-962a-6023d83c270d"], "creditos": 5},
+            {"id": "ba649b1a-fb22-4d1d-9a37-390f1a1b7f99", "nombre": "REGULACIÓN DE MERCADOS", "tipo": "ninguno", "requisitos": ["be7492bf-378f-4390-a58b-d3076a14a74e"], "creditos": 5},
+            {"id": "6a41389a-ed5f-4762-bbf3-81a58eb05ab7", "nombre": "ÁREA ESPECIALIZADA DERECHOS HUMANOS", "tipo": "ninguno", "requisitos": ["74dd5a3e-cd91-4e8f-823d-caaef8312f3a"], "creditos": 4},
+            {"id": "582b247a-c97d-4a6c-ae63-d8117f47d764", "nombre": "INGLÉS IV", "tipo": "ninguno", "requisitos": ["5cf09280-96fb-45f2-9ecd-acb188e203ea"], "creditos": 2}
         ]
     },
     {
         "año": 3,
         "periodo": 1,
         "materias": [
-            {"id": "e9c34b8c-a2c3-48f6-86f7-8ed564475066", "nombre": "DERECHO PROCESAL III", "tipo": "ninguno", "requisitos": ["8b82d0d2-5677-450b-9be7-e3455d13216a"]},
-            {"id": "01edbf33-9e97-4fb1-a62b-21e603aaf7e8", "nombre": "DERECHO CIVIL IV", "tipo": "ninguno", "requisitos": ["969ba8d4-d3cc-4b1f-9311-c5d19eda7f80"]},
-            {"id": "21651b7b-6563-4d14-8d5e-ef41798cfc8f", "nombre": "DERECHO PENAL II", "tipo": "ninguno", "requisitos": ["d8150bb7-7df4-4b52-8e54-365606b954e9"]},
-            {"id": "bee210f3-3052-4bb5-8661-91b0478a726c", "nombre": "DERECHO ADMINISTRATIVO I", "tipo": "ninguno", "requisitos": ["62ed0e8c-900f-47d5-b81e-6ca72e8e3d80"]},
-            {"id": "89b113f5-844d-4948-ac2f-5c6fdd53e5c0", "nombre": "ÁREA ESPECIALIZADA DERECHO INTERNACIONAL", "tipo": "ninguno", "requisitos": []},
-            {"id": "1267f291-8bde-4526-9373-c753e98eb126", "nombre": "DERECHO DEL TRABAJO I", "tipo": "ninguno", "requisitos": ["969ba8d4-d3cc-4b1f-9311-c5d19eda7f80"]},
-            {"id": "a5f03685-3222-4096-b268-8ce0eaabaafa", "nombre": "INGLÉS V", "tipo": "ninguno", "requisitos": ["582b247a-c97d-4a6c-ae63-d8117f47d764"]}
+            {"id": "e9c34b8c-a2c3-48f6-86f7-8ed564475066", "nombre": "DERECHO PROCESAL III", "tipo": "ninguno", "requisitos": ["8b82d0d2-5677-450b-9be7-e3455d13216a"], "creditos": 5},
+            {"id": "01edbf33-9e97-4fb1-a62b-21e603aaf7e8", "nombre": "DERECHO CIVIL IV", "tipo": "ninguno", "requisitos": ["969ba8d4-d3cc-4b1f-9311-c5d19eda7f80"], "creditos": 5},
+            {"id": "21651b7b-6563-4d14-8d5e-ef41798cfc8f", "nombre": "DERECHO PENAL II", "tipo": "ninguno", "requisitos": ["d8150bb7-7df4-4b52-8e54-365606b954e9"], "creditos": 5},
+            {"id": "bee210f3-3052-4bb5-8661-91b0478a726c", "nombre": "DERECHO ADMINISTRATIVO I", "tipo": "ninguno", "requisitos": ["62ed0e8c-900f-47d5-b81e-6ca72e8e3d80"], "creditos": 5},
+            {"id": "89b113f5-844d-4948-ac2f-5c6fdd53e5c0", "nombre": "ÁREA ESPECIALIZADA DERECHO INTERNACIONAL", "tipo": "ninguno", "requisitos": [], "creditos": 4},
+            {"id": "1267f291-8bde-4526-9373-c753e98eb126", "nombre": "DERECHO DEL TRABAJO I", "tipo": "ninguno", "requisitos": ["969ba8d4-d3cc-4b1f-9311-c5d19eda7f80"], "creditos": 5},
+            {"id": "a5f03685-3222-4096-b268-8ce0eaabaafa", "nombre": "INGLÉS V", "tipo": "ninguno", "requisitos": ["582b247a-c97d-4a6c-ae63-d8117f47d764"], "creditos": 2}
         ]
     },
     {
         "año": 3,
         "periodo": 2,
         "materias": [
-            {"id": "e9da9407-421e-48c2-8de9-516e9874fcfe", "nombre": "DERECHO PROCESAL IV", "tipo": "ninguno", "requisitos": ["e9c34b8c-a2c3-48f6-86f7-8ed564475066"]},
-            {"id": "6bee94c2-6ddb-423e-ba4d-a869ac8ec558", "nombre": "DERECHO CIVIL V", "tipo": "ninguno", "requisitos": ["01edbf33-9e97-4fb1-a62b-21e603aaf7e8"]},
-            {"id": "1534b4d1-f97a-4529-ade8-a3e8cf7d564c", "nombre": "DERECHO PENAL III", "tipo": "ninguno", "requisitos": ["21651b7b-6563-4d14-8d5e-ef41798cfc8f"]},
-            {"id": "98b9f921-914e-47e3-a1ae-1291d5ef34e9", "nombre": "DERECHO ADMINISTRATIVO II", "tipo": "ninguno", "requisitos": ["bee210f3-3052-4bb5-8661-91b0478a726c"]},
-            {"id": "a48029b0-8b74-4c1c-be91-72f9a2b80686", "nombre": "DERECHO COMERCIAL I", "tipo": "ninguno", "requisitos": ["01edbf33-9e97-4fb1-a62b-21e603aaf7e8"]},
-            {"id": "7ae2686c-cf3e-4a55-9ebf-2018519b3c86", "nombre": "DERECHO DEL TRABAJO II", "tipo": "ninguno", "requisitos": ["1267f291-8bde-4526-9373-c753e98eb126"]},
-            {"id": "72094852-27d9-4d6f-9194-363df638750f", "nombre": "DERECHO AMBIENTAL, DE LOS RECURSOS NATURALES Y DE LA SUSTENTABILIDAD", "tipo": "ninguno", "requisitos": ["ba649b1a-fb22-4d1d-9a37-390f1a1b7f99"]}
+            {"id": "e9da9407-421e-48c2-8de9-516e9874fcfe", "nombre": "DERECHO PROCESAL IV", "tipo": "ninguno", "requisitos": ["e9c34b8c-a2c3-48f6-86f7-8ed564475066"], "creditos": 5},
+            {"id": "6bee94c2-6ddb-423e-ba4d-a869ac8ec558", "nombre": "DERECHO CIVIL V", "tipo": "ninguno", "requisitos": ["01edbf33-9e97-4fb1-a62b-21e603aaf7e8"], "creditos": 5},
+            {"id": "1534b4d1-f97a-4529-ade8-a3e8cf7d564c", "nombre": "DERECHO PENAL III", "tipo": "ninguno", "requisitos": ["21651b7b-6563-4d14-8d5e-ef41798cfc8f"], "creditos": 5},
+            {"id": "98b9f921-914e-47e3-a1ae-1291d5ef34e9", "nombre": "DERECHO ADMINISTRATIVO II", "tipo": "ninguno", "requisitos": ["bee210f3-3052-4bb5-8661-91b0478a726c"], "creditos": 5},
+            {"id": "a48029b0-8b74-4c1c-be91-72f9a2b80686", "nombre": "DERECHO COMERCIAL I", "tipo": "ninguno", "requisitos": ["01edbf33-9e97-4fb1-a62b-21e603aaf7e8"], "creditos": 5},
+            {"id": "7ae2686c-cf3e-4a55-9ebf-2018519b3c86", "nombre": "DERECHO DEL TRABAJO II", "tipo": "ninguno", "requisitos": ["1267f291-8bde-4526-9373-c753e98eb126"], "creditos": 5},
+            {"id": "72094852-27d9-4d6f-9194-363df638750f", "nombre": "DERECHO AMBIENTAL, DE LOS RECURSOS NATURALES Y DE LA SUSTENTABILIDAD", "tipo": "ninguno", "requisitos": ["ba649b1a-fb22-4d1d-9a37-390f1a1b7f99"], "creditos": 5}
         ]
     },
     {
         "año": 4,
         "periodo": 1,
         "materias": [
-            {"id": "38efa2ae-b656-478b-8421-b45f1038650a", "nombre": "ÁREA ESPECIALIZADA DERECHO PROCESAL", "tipo": "ninguno", "requisitos": ["e9da9407-421e-48c2-8de9-516e9874fcfe"]},
-            {"id": "ac084b78-f09a-4f42-ae30-ae169d457e13", "nombre": "DERECHO CIVIL VI", "tipo": "ninguno", "requisitos": ["6bee94c2-6ddb-423e-ba4d-a869ac8ec558"]},
-            {"id": "5878161c-9c49-4819-93af-2d026bb89ccd", "nombre": "ÁREA ESPECIALIZADA CIENCIAS PENALES", "tipo": "ninguno", "requisitos": ["1534b4d1-f97a-4529-ade8-a3e8cf7d564c"]},
-            {"id": "da4c2e0c-9ea5-4aaf-855b-f34799e6ebdd", "nombre": "ÁREA ESPECILIZADA DERECHO ECONÓMICO II", "tipo": "ninguno", "requisitos": ["ba649b1a-fb22-4d1d-9a37-390f1a1b7f99"]},
-            {"id": "e6850d37-36a5-420d-8409-4bc7a0e89f54", "nombre": "DERECHO COMERCIAL II", "tipo": "ninguno", "requisitos": ["a48029b0-8b74-4c1c-be91-72f9a2b80686"]},
-            {"id": "2bb52d6a-6c76-48d4-97d8-faee744a2b3d", "nombre": "DERECHO DE LA SEGURIDAD SOCIAL", "tipo": "ninguno", "requisitos": ["7ae2686c-cf3e-4a55-9ebf-2018519b3c86"]},
-            {"id": "e7aa9b50-12c6-4419-abb7-5426c8dc8d52", "nombre": "ÁREA ESPECIALIZADA CIENCIAS DEL DERECHO", "tipo": "ninguno", "requisitos": ["1534b4d1-f97a-4529-ade8-a3e8cf7d564c"]}
+            {"id": "38efa2ae-b656-478b-8421-b45f1038650a", "nombre": "ÁREA ESPECIALIZADA DERECHO PROCESAL", "tipo": "ninguno", "requisitos": ["e9da9407-421e-48c2-8de9-516e9874fcfe"], "creditos": 4},
+            {"id": "ac084b78-f09a-4f42-ae30-ae169d457e13", "nombre": "DERECHO CIVIL VI", "tipo": "ninguno", "requisitos": ["6bee94c2-6ddb-423e-ba4d-a869ac8ec558"], "creditos": 5},
+            {"id": "5878161c-9c49-4819-93af-2d026bb89ccd", "nombre": "ÁREA ESPECIALIZADA CIENCIAS PENALES", "tipo": "ninguno", "requisitos": ["1534b4d1-f97a-4529-ade8-a3e8cf7d564c"], "creditos": 4},
+            {"id": "da4c2e0c-9ea5-4aaf-855b-f34799e6ebdd", "nombre": "ÁREA ESPECILIZADA DERECHO ECONÓMICO II", "tipo": "ninguno", "requisitos": ["ba649b1a-fb22-4d1d-9a37-390f1a1b7f99"], "creditos": 4},
+            {"id": "e6850d37-36a5-420d-8409-4bc7a0e89f54", "nombre": "DERECHO COMERCIAL II", "tipo": "ninguno", "requisitos": ["a48029b0-8b74-4c1c-be91-72f9a2b80686"], "creditos": 5},
+            {"id": "2bb52d6a-6c76-48d4-97d8-faee744a2b3d", "nombre": "DERECHO DE LA SEGURIDAD SOCIAL", "tipo": "ninguno", "requisitos": ["7ae2686c-cf3e-4a55-9ebf-2018519b3c86"], "creditos": 5},
+            {"id": "e7aa9b50-12c6-4419-abb7-5426c8dc8d52", "nombre": "ÁREA ESPECIALIZADA CIENCIAS DEL DERECHO", "tipo": "ninguno", "requisitos": ["1534b4d1-f97a-4529-ade8-a3e8cf7d564c"], "creditos": 4}
         ]
     },
     {
         "año": 4,
         "periodo": 2,
         "materias": [
-            {"id": "f6ca8363-1d1e-43b6-a9b6-3122993ac508", "nombre": "TALLER DE MEMORIA I", "tipo": "ninguno", "requisitos": []},
-            {"id": "dc0bf996-4193-45ff-8b07-d085618df15d", "nombre": "DERECHO CIVIL VII", "tipo": "ninguno", "requisitos": ["a48029b0-8b74-4c1c-be91-72f9a2b80686", "ac084b78-f09a-4f42-ae30-ae169d457e13"]},
-            {"id": "a6e0003c-cd87-46a6-8d3b-d9d831fec9b9", "nombre": "CLÍNICAS JURÍDICAS I", "tipo": "ninguno", "requisitos": []},
-            {"id": "4a976ad4-c0b2-495f-8163-06aa14af60eb", "nombre": "PROFESIÓN JURÍDICA", "tipo": "ninguno", "requisitos": ["ac084b78-f09a-4f42-ae30-ae169d457e13"]},
-            {"id": "b05d47c1-4c2d-469a-a016-c9682eddebaa", "nombre": "DERECHO COMERCIAL III", "tipo": "ninguno", "requisitos": ["e6850d37-36a5-420d-8409-4bc7a0e89f54"]},
-            {"id": "efe32828-3189-4a40-a45c-34bdf7089f15", "nombre": "FORMACIÓN COMPLEMENTARIA (LIBRE/CFG)", "tipo": "ninguno", "requisitos": []}
+            {"id": "f6ca8363-1d1e-43b6-a9b6-3122993ac508", "nombre": "TALLER DE MEMORIA I", "tipo": "ninguno", "requisitos": [], "creditos": 8},
+            {"id": "dc0bf996-4193-45ff-8b07-d085618df15d", "nombre": "DERECHO CIVIL VII", "tipo": "ninguno", "requisitos": ["a48029b0-8b74-4c1c-be91-72f9a2b80686", "ac084b78-f09a-4f42-ae30-ae169d457e13"], "creditos": 5},
+            {"id": "a6e0003c-cd87-46a6-8d3b-d9d831fec9b9", "nombre": "CLÍNICAS JURÍDICAS I", "tipo": "ninguno", "requisitos": [], "creditos": 7},
+            {"id": "4a976ad4-c0b2-495f-8163-06aa14af60eb", "nombre": "PROFESIÓN JURÍDICA", "tipo": "ninguno", "requisitos": ["ac084b78-f09a-4f42-ae30-ae169d457e13"], "creditos": 5},
+            {"id": "b05d47c1-4c2d-469a-a016-c9682eddebaa", "nombre": "DERECHO COMERCIAL III", "tipo": "ninguno", "requisitos": ["e6850d37-36a5-420d-8409-4bc7a0e89f54"], "creditos": 5},
+            {"id": "efe32828-3189-4a40-a45c-34bdf7089f15", "nombre": "FORMACIÓN COMPLEMENTARIA (LIBRE/CFG)", "tipo": "cfg", "requisitos": [], "creditos": 2}
         ]
     },
     {
         "año": 5,
         "periodo": 1,
         "materias": [
-            {"id": "6d8f513e-32d6-40b4-ba8a-00111bd15e1f", "nombre": "TALLER DE MEMORIA II", "tipo": "ninguno", "requisitos": ["f6ca8363-1d1e-43b6-a9b6-3122993ac508"]},
-            {"id": "19d7919b-c38b-4b7a-9e6b-c40a61660b93", "nombre": "ÁREA ESPECIALIZADA DERECHO PRIVADO", "tipo": "ninguno", "requisitos": ["dc0bf996-4193-45ff-8b07-d085618df15d"]},
-            {"id": "e7913eac-bb70-4b31-bcfe-b3826981a4ab", "nombre": "CLÍNICAS JURÍDICAS ESPECIALIZADAS", "tipo": "ninguno", "requisitos": ["a6e0003c-cd87-46a6-8d3b-d9d831fec9b9"]},
-            {"id": "a7288222-ff44-420b-aecf-924863b367e0", "nombre": "DERECHO TRIBUTARIO", "tipo": "ninguno", "requisitos": ["e6850d37-36a5-420d-8409-4bc7a0e89f54"]},
-            {"id": "f50a9cad-cc02-4ac5-948b-77ca68362ad3", "nombre": "ELECTIVO ABIERTO", "tipo": "ninguno", "requisitos": []},
-            {"id": "6ea754a1-f2a5-49f6-972e-e85116d59222", "nombre": "ELECTIVO ABIERTO", "tipo": "ninguno", "requisitos": []}
+            {"id": "6d8f513e-32d6-40b4-ba8a-00111bd15e1f", "nombre": "TALLER DE MEMORIA II", "tipo": "ninguno", "requisitos": ["f6ca8363-1d1e-43b6-a9b6-3122993ac508"], "creditos": 8},
+            {"id": "19d7919b-c38b-4b7a-9e6b-c40a61660b93", "nombre": "ÁREA ESPECIALIZADA DERECHO PRIVADO", "tipo": "ninguno", "requisitos": ["dc0bf996-4193-45ff-8b07-d085618df15d"], "creditos": 4},
+            {"id": "e7913eac-bb70-4b31-bcfe-b3826981a4ab", "nombre": "CLÍNICAS JURÍDICAS ESPECIALIZADAS", "tipo": "ninguno", "requisitos": ["a6e0003c-cd87-46a6-8d3b-d9d831fec9b9"], "creditos": 7},
+            {"id": "a7288222-ff44-420b-aecf-924863b367e0", "nombre": "DERECHO TRIBUTARIO", "tipo": "ninguno", "requisitos": ["e6850d37-36a5-420d-8409-4bc7a0e89f54"], "creditos": 5},
+            {"id": "f50a9cad-cc02-4ac5-948b-77ca68362ad3", "nombre": "ELECTIVO ABIERTO", "tipo": "electivo", "requisitos": [], "creditos": 4},
+            {"id": "6ea754a1-f2a5-49f6-972e-e85116d59222", "nombre": "ELECTIVO ABIERTO", "tipo": "electivo", "requisitos": [], "creditos": 4}
         ]
     },
     {
         "año": 5,
         "periodo": 2,
         "materias": [
-            {"id": "2be8d447-f97a-4982-a1a4-a0bb2e9baa00", "nombre": "TALLER INTEGRADO DE RESOLUCIÓN DE CASOS", "tipo": "ninguno", "requisitos": ["dc0bf996-4193-45ff-8b07-d085618df15d"]},
-            {"id": "69c9d027-a590-4935-a0da-8ba931b7572a", "nombre": "DERECHO INTERNACIONAL PRIVADO", "tipo": "ninguno", "requisitos": ["ac084b78-f09a-4f42-ae30-ae169d457e13", "8954f6b0-caf2-4794-8b65-b223b934b2f9"]},
-            {"id": "c6fa6833-048a-4ef1-b7dc-176d47a36eef", "nombre": "ELECTIVO ABIERTO", "tipo": "ninguno", "requisitos": []},
-            {"id": "1b3ff280-96ae-4018-b0b1-695289f16504", "nombre": "ELECTIVO ABIERTO", "tipo": "ninguno", "requisitos": []},
-            {"id": "258d9709-caf9-4aec-8e7f-9cd86d096779", "nombre": "FORMACIÓN COMPLEMENTARIA (LIBRE/CFG)", "tipo": "ninguno", "requisitos": []}
+            {"id": "2be8d447-f97a-4982-a1a4-a0bb2e9baa00", "nombre": "TALLER INTEGRADO DE RESOLUCIÓN DE CASOS", "tipo": "ninguno", "requisitos": ["dc0bf996-4193-45ff-8b07-d085618df15d"], "creditos": 8},
+            {"id": "69c9d027-a590-4935-a0da-8ba931b7572a", "nombre": "DERECHO INTERNACIONAL PRIVADO", "tipo": "ninguno", "requisitos": ["ac084b78-f09a-4f42-ae30-ae169d457e13", "8954f6b0-caf2-4794-8b65-b223b934b2f9"], "creditos": 5},
+            {"id": "c6fa6833-048a-4ef1-b7dc-176d47a36eef", "nombre": "ELECTIVO ABIERTO", "tipo": "electivo", "requisitos": [], "creditos": 4},
+            {"id": "1b3ff280-96ae-4018-b0b1-695289f16504", "nombre": "ELECTIVO ABIERTO", "tipo": "electivo", "requisitos": [], "creditos": 4},
+            {"id": "258d9709-caf9-4aec-8e7f-9cd86d096779", "nombre": "FORMACIÓN COMPLEMENTARIA (LIBRE/CFG)", "tipo": "cfg", "requisitos": [], "creditos": 2}
         ]
     }
 ];
 
 
-// Objeto para almacenar el estado de las materias completadas
-const completedCourses = {};
+// Objeto para almacenar el estado de las materias completadas y otros datos personalizados
+let courseData = JSON.parse(localStorage.getItem('courseData')) || {};
+// Inicializar completedCourses a partir de courseData si existe
+let completedCourses = {};
+for (const courseId in courseData) {
+    if (courseData[courseId].completed) {
+        completedCourses[courseId] = true;
+    }
+}
 
 // Obtener referencias a elementos del DOM
 const curriculumGrid = document.getElementById('curriculum-grid');
@@ -149,8 +154,31 @@ const summaryOutput = document.getElementById('summary-output');
 const summaryLoadingSpinner = document.getElementById('summary-loading-spinner');
 const summaryError = document.getElementById('summary-error');
 
+// Referencias para los nuevos campos del modal
+const professorNameInput = document.getElementById('professor-name');
+const courseNotesTextarea = document.getElementById('course-notes');
+const gradesContainer = document.getElementById('grades-container');
+const addGradeButton = document.getElementById('add-grade-button');
+const finalCourseGradeSpan = document.getElementById('final-course-grade');
+const saveCourseDetailsButton = document.getElementById('save-course-details');
+const includeInGpaCheckbox = document.getElementById('include-in-gpa');
+
+// Referencias para los promedios
+const semesterGpaSpan = document.getElementById('semester-gpa');
+const overallGpaSpan = document.getElementById('overall-gpa');
+const calculateGpaButton = document.getElementById('calculate-gpa-button');
+
+// Referencias para la personalización del fondo
+const backgroundColorPicker = document.getElementById('background-color-picker');
+const backgroundImageInput = document.getElementById('background-image-input');
+const clearBackgroundImageButton = document.getElementById('clear-background-image');
+const bodyElement = document.body;
+
 // Variable para almacenar la materia actualmente seleccionada en el modal
-let currentCourseForSummary = null;
+let currentCourseForModal = null;
+
+// Cargar la configuración de fondo guardada
+loadBackgroundSettings();
 
 /**
  * Función para obtener el nombre de una materia por su ID.
@@ -180,81 +208,142 @@ function checkRequisites(requisites) {
 }
 
 /**
+ * Función para obtener el año más alto con al menos una materia completada.
+ * Esto se usa para la restricción de cursos por año.
+ * @returns {number} El año más alto completado, o 0 si no hay cursos completados.
+ */
+function getMaxCompletedYear() {
+    let maxYear = 0;
+    for (const semester of mallaCurricular) {
+        for (const course of semester.materias) {
+            if (completedCourses[course.id]) {
+                maxYear = Math.max(maxYear, semester.año);
+            }
+        }
+    }
+    return maxYear;
+}
+
+
+/**
  * Función para renderizar la malla curricular.
  */
 function renderCurriculum() {
     curriculumGrid.innerHTML = ''; // Limpiar el contenido actual de la malla
+    const maxCompletedYear = getMaxCompletedYear();
 
+    // Agrupar materias por año
+    const years = {};
     mallaCurricular.forEach(semester => {
-        // Crear un div para cada columna de semestre
-        const semesterColumn = document.createElement('div');
-        semesterColumn.className = 'semester-column';
-
-        // Crear el título del semestre
-        const semesterTitle = document.createElement('h2');
-        semesterTitle.className = 'semester-title';
-        semesterTitle.textContent = `Año ${semester.año} - Semestre ${semester.periodo}`;
-        semesterColumn.appendChild(semesterTitle);
-
-        // Iterar sobre las materias de cada semestre
-        semester.materias.forEach(course => {
-            // Crear la tarjeta de la materia
-            const courseCard = document.createElement('div');
-            courseCard.className = 'course-card rounded-md p-4 mb-2 cursor-pointer transition duration-200 ease-in-out';
-            courseCard.dataset.courseId = course.id; // Almacenar el ID de la materia en el dataset
-
-            // Determinar el estado de la materia (completado, pendiente, no disponible)
-            let statusClass = 'status-pending';
-            let statusText = 'Pendiente';
-            let isClickable = true; // Por defecto, las materias son clicables
-
-            if (completedCourses[course.id]) {
-                statusClass = 'status-completed';
-                statusText = 'Completado';
-            } else if (!checkRequisites(course.requisitos)) {
-                statusClass = 'status-unavailable';
-                statusText = 'No Disponible';
-                isClickable = false; // Si no tiene requisitos, no es clicable para marcar como completado
-            }
-
-            // Añadir clases de estilo basadas en el estado
-            courseCard.classList.add(statusClass);
-
-            // Contenido de la tarjeta de la materia
-            const courseName = document.createElement('p');
-            courseName.className = 'course-name font-semibold text-blue-700';
-            courseName.textContent = course.nombre;
-            courseCard.appendChild(courseName);
-
-            const courseStatus = document.createElement('span');
-            courseStatus.className = 'course-status text-sm mt-2 px-2 py-1 rounded';
-            courseStatus.textContent = statusText;
-            courseCard.appendChild(courseStatus);
-
-            // Añadir evento de click para marcar como completado/pendiente
-            if (isClickable) {
-                courseCard.addEventListener('click', () => {
-                    toggleCourseCompletion(course.id);
-                });
-            }
-
-            // Añadir evento de click para mostrar requisitos (si los tiene)
-            // Se usa 'contextmenu' para el modal de requisitos/resumen
-            courseCard.addEventListener('contextmenu', (e) => {
-                e.preventDefault(); // Prevenir el menú contextual por defecto
-                showRequisitesModal(course);
-            });
-            // También permitir clic normal para mostrar requisitos si la materia no es clicable para completar
-            if (!isClickable && course.requisitos && course.requisitos.length > 0) {
-                courseCard.addEventListener('click', () => {
-                    showRequisitesModal(course);
-                });
-            }
-
-            semesterColumn.appendChild(courseCard);
-        });
-        curriculumGrid.appendChild(semesterColumn);
+        if (!years[semester.año]) {
+            years[semester.año] = [];
+        }
+        years[semester.año].push(semester);
     });
+
+    for (const yearNum in years) {
+        const yearContainer = document.createElement('div');
+        yearContainer.className = 'year-container';
+
+        const yearTitle = document.createElement('h2');
+        yearTitle.className = 'year-title';
+        yearTitle.textContent = `Año ${yearNum}`;
+        yearContainer.appendChild(yearTitle);
+
+        const semestersInYearDiv = document.createElement('div');
+        semestersInYearDiv.className = 'semesters-in-year';
+
+        years[yearNum].forEach(semester => {
+            // Crear un div para cada columna de semestre
+            const semesterColumn = document.createElement('div');
+            semesterColumn.className = 'semester-column';
+
+            // Crear el título del semestre
+            const semesterSubtitle = document.createElement('h3');
+            semesterSubtitle.className = 'semester-subtitle';
+            semesterSubtitle.textContent = `Semestre ${semester.periodo}`;
+            semesterColumn.appendChild(semesterSubtitle);
+
+            // Iterar sobre las materias de cada semestre
+            semester.materias.forEach(course => {
+                // Crear la tarjeta de la materia
+                const courseCard = document.createElement('div');
+                courseCard.className = 'course-card';
+                courseCard.dataset.courseId = course.id; // Almacenar el ID de la materia en el dataset
+
+                // Determinar el estado de la materia (completado, pendiente, no disponible)
+                let statusClass = 'status-pending';
+                let statusText = 'Pendiente';
+                let isClickable = true; // Por defecto, las materias son clicables
+
+                const isElectiveOrCfg = course.tipo === 'electivo' || course.tipo === 'cfg';
+                const isYearUnlocked = parseInt(yearNum) <= (maxCompletedYear > 0 ? maxCompletedYear + 1 : 1); // Permite ver el siguiente año si hay algo completado
+
+                if (completedCourses[course.id]) {
+                    statusClass = 'status-completed';
+                    statusText = 'Completado';
+                } else if (!checkRequisites(course.requisitos)) {
+                    statusClass = 'status-unavailable';
+                    statusText = 'No Disponible (Requisitos)';
+                    isClickable = false;
+                } else if (!isElectiveOrCfg && parseInt(yearNum) > (maxCompletedYear + 1)) {
+                     // Restricción por año para cursos no electivos/CFG
+                    statusClass = 'status-unavailable';
+                    statusText = 'No Disponible (Año)';
+                    isClickable = false;
+                }
+
+
+                // Añadir clases de estilo basadas en el estado
+                courseCard.classList.add(statusClass);
+
+                // Contenido de la tarjeta de la materia
+                const courseName = document.createElement('p');
+                courseName.className = 'course-name';
+                courseName.textContent = course.nombre;
+                courseCard.appendChild(courseName);
+
+                const courseFooter = document.createElement('div');
+                courseFooter.className = 'course-footer';
+
+                const courseCredits = document.createElement('span');
+                courseCredits.className = 'course-credits';
+                courseCredits.textContent = `${course.creditos} SCT`;
+                courseFooter.appendChild(courseCredits);
+
+                const courseStatus = document.createElement('span');
+                courseStatus.className = 'course-status';
+                courseStatus.textContent = statusText;
+                courseFooter.appendChild(courseStatus);
+                courseCard.appendChild(courseFooter);
+
+
+                // Añadir evento de click para marcar como completado/pendiente
+                if (isClickable) {
+                    courseCard.addEventListener('click', () => {
+                        toggleCourseCompletion(course.id);
+                    });
+                }
+
+                // Añadir evento de click para mostrar requisitos y detalles (contextmenu o click si no es clicable para completar)
+                courseCard.addEventListener('contextmenu', (e) => {
+                    e.preventDefault(); // Prevenir el menú contextual por defecto
+                    showCourseDetailsModal(course);
+                });
+                if (!isClickable) { // Si no es clicable para marcar, el clic normal abre el modal de detalles
+                    courseCard.addEventListener('click', () => {
+                        showCourseDetailsModal(course);
+                    });
+                }
+
+                semesterColumn.appendChild(courseCard);
+            });
+            semestersInYearDiv.appendChild(semesterColumn);
+        });
+        yearContainer.appendChild(semestersInYearDiv);
+        curriculumGrid.appendChild(yearContainer);
+    }
+    calculateSemesterAndOverallGPA(); // Recalcular promedios al renderizar
 }
 
 /**
@@ -262,27 +351,34 @@ function renderCurriculum() {
  * @param {string} courseId - El ID de la materia a alternar.
  */
 function toggleCourseCompletion(courseId) {
-    if (completedCourses[courseId]) {
+    if (courseData[courseId] && courseData[courseId].completed) {
         // Si la materia está completada, desmarcarla
-        delete completedCourses[courseId];
+        courseData[courseId].completed = false;
+        delete completedCourses[courseId]; // Eliminar del objeto de completados
     } else {
         // Si la materia no está completada, marcarla
-        completedCourses[courseId] = true;
+        if (!courseData[courseId]) {
+            courseData[courseId] = {};
+        }
+        courseData[courseId].completed = true;
+        completedCourses[courseId] = true; // Añadir al objeto de completados
     }
+    saveCourseData(); // Guardar el estado
     renderCurriculum(); // Volver a renderizar la malla para actualizar el estado visual
 }
 
 /**
- * Función para mostrar el modal de requisitos y configurar el botón de resumen.
+ * Función para mostrar el modal de detalles del curso.
  * @param {object} course - El objeto de la materia.
  */
-function showRequisitesModal(course) {
-    currentCourseForSummary = course; // Almacenar la materia actual
+function showCourseDetailsModal(course) {
+    currentCourseForModal = course; // Almacenar la materia actual
     modalTitle.textContent = `Detalles de: ${course.nombre}`;
-    modalRequisitesList.innerHTML = ''; // Limpiar la lista anterior
+    modalRequisitesList.innerHTML = ''; // Limpiar la lista de requisitos anterior
     summaryOutput.innerHTML = ''; // Limpiar el resumen anterior
     summaryOutput.classList.add('hidden'); // Ocultar el resumen
     summaryError.classList.add('hidden'); // Ocultar errores
+    summaryLoadingSpinner.classList.add('hidden'); // Ocultar spinner
 
     // Mostrar requisitos
     if (course.requisitos && course.requisitos.length > 0) {
@@ -297,13 +393,240 @@ function showRequisitesModal(course) {
         modalRequisitesList.appendChild(listItem);
     }
 
+    // Cargar datos guardados para el curso
+    const savedCourse = courseData[course.id] || {};
+    professorNameInput.value = savedCourse.professor || '';
+    courseNotesTextarea.value = savedCourse.notes || '';
+    includeInGpaCheckbox.checked = savedCourse.includeInGpa !== undefined ? savedCourse.includeInGpa : true; // Por defecto true
+
+    // Cargar y renderizar calificaciones
+    renderGradesInput(savedCourse.grades || []);
+    calculateFinalCourseGrade(); // Calcular la nota final al abrir el modal
+
     requisitesModal.classList.remove('hidden'); // Mostrar el modal
+}
+
+/**
+ * Renderiza los campos de entrada para las calificaciones de un curso.
+ * @param {Array<object>} grades - Array de objetos de calificación.
+ */
+function renderGradesInput(grades) {
+    gradesContainer.innerHTML = ''; // Limpiar las entradas anteriores
+    if (grades.length === 0) {
+        // Añadir una entrada vacía si no hay calificaciones
+        addGradeInput();
+    } else {
+        grades.forEach(grade => addGradeInput(grade));
+    }
+    // Añadir listeners para recalcular la nota final al cambiar las calificaciones
+    gradesContainer.querySelectorAll('input').forEach(input => {
+        input.addEventListener('input', calculateFinalCourseGrade);
+    });
+}
+
+/**
+ * Añade un nuevo campo de entrada para una calificación.
+ * @param {object} [grade={}] - Objeto de calificación opcional para pre-llenar.
+ */
+function addGradeInput(grade = {}) {
+    const gradeGroup = document.createElement('div');
+    gradeGroup.className = 'grade-input-group';
+
+    const nameInput = document.createElement('input');
+    nameInput.type = 'text';
+    nameInput.placeholder = 'Nombre (ej. Control 1)';
+    nameInput.value = grade.nombre || '';
+    nameInput.className = 'p-2 border rounded-md text-sm';
+    nameInput.addEventListener('input', calculateFinalCourseGrade);
+
+    const scoreInput = document.createElement('input');
+    scoreInput.type = 'number';
+    scoreInput.placeholder = 'Nota (1.0-7.0)';
+    scoreInput.min = '1.0';
+    scoreInput.max = '7.0';
+    scoreInput.step = '0.1';
+    scoreInput.value = grade.nota !== undefined ? grade.nota : '';
+    scoreInput.className = 'p-2 border rounded-md text-sm w-24';
+    scoreInput.addEventListener('input', calculateFinalCourseGrade);
+
+    const weightInput = document.createElement('input');
+    weightInput.type = 'number';
+    weightInput.placeholder = 'Ponderación (%)';
+    weightInput.min = '0';
+    weightInput.max = '100';
+    weightInput.value = grade.ponderacion !== undefined ? grade.ponderacion : '';
+    weightInput.className = 'p-2 border rounded-md text-sm w-28';
+    weightInput.addEventListener('input', calculateFinalCourseGrade);
+
+    const removeButton = document.createElement('button');
+    removeButton.textContent = 'X';
+    removeButton.className = 'bg-red-500 hover:bg-red-600 text-white font-bold py-1 px-2 rounded-md transition duration-300 ease-in-out text-xs';
+    removeButton.addEventListener('click', () => {
+        gradeGroup.remove();
+        calculateFinalCourseGrade(); // Recalcular después de eliminar
+    });
+
+    gradeGroup.appendChild(nameInput);
+    gradeGroup.appendChild(scoreInput);
+    gradeGroup.appendChild(weightInput);
+    gradeGroup.appendChild(removeButton);
+    gradesContainer.appendChild(gradeGroup);
+}
+
+// Event listener para añadir una nueva calificación
+addGradeButton.addEventListener('click', () => addGradeInput());
+
+/**
+ * Calcula la nota final del curso actual en el modal.
+ */
+function calculateFinalCourseGrade() {
+    let totalScore = 0;
+    let totalWeight = 0;
+    let hasValidGrades = false;
+
+    const gradeInputs = gradesContainer.querySelectorAll('.grade-input-group');
+    const currentGrades = [];
+
+    gradeInputs.forEach(group => {
+        const name = group.children[0].value;
+        const score = parseFloat(group.children[1].value);
+        const weight = parseFloat(group.children[2].value);
+
+        if (!isNaN(score) && score >= 1.0 && score <= 7.0 && !isNaN(weight) && weight >= 0) {
+            totalScore += (score * weight);
+            totalWeight += weight;
+            hasValidGrades = true;
+            currentGrades.push({ nombre: name, nota: score, ponderacion: weight });
+        } else if (name || !isNaN(score) || !isNaN(weight)) { // If any field is partially filled, consider it for saving
+             currentGrades.push({ nombre: name, nota: isNaN(score) ? null : score, ponderacion: isNaN(weight) ? null : weight });
+        }
+    });
+
+    if (hasValidGrades && totalWeight > 0) {
+        const finalGrade = totalScore / totalWeight;
+        finalCourseGradeSpan.textContent = finalGrade.toFixed(2);
+    } else {
+        finalCourseGradeSpan.textContent = 'N/A';
+    }
+
+    // Actualizar el objeto currentCourseForModal con las calificaciones actuales
+    if (currentCourseForModal) {
+        if (!courseData[currentCourseForModal.id]) {
+            courseData[currentCourseForModal.id] = {};
+        }
+        courseData[currentCourseForModal.id].grades = currentGrades;
+        courseData[currentCourseForModal.id].finalGrade = hasValidGrades && totalWeight > 0 ? parseFloat(finalCourseGradeSpan.textContent) : null;
+    }
+}
+
+/**
+ * Guarda los detalles del curso (profesor, notas, calificaciones) en localStorage.
+ */
+saveCourseDetailsButton.addEventListener('click', () => {
+    if (currentCourseForModal) {
+        const courseId = currentCourseForModal.id;
+        if (!courseData[courseId]) {
+            courseData[courseId] = {};
+        }
+        courseData[courseId].professor = professorNameInput.value;
+        courseData[courseId].notes = courseNotesTextarea.value;
+        courseData[courseId].includeInGpa = includeInGpaCheckbox.checked;
+
+        // Las calificaciones y la nota final ya se actualizan en calculateFinalCourseGrade
+        saveCourseData();
+        requisitesModal.classList.add('hidden');
+        renderCurriculum(); // Re-render para actualizar posibles cambios en el estado de disponibilidad por notas
+    }
+});
+
+/**
+ * Guarda los datos del curso en localStorage.
+ */
+function saveCourseData() {
+    localStorage.setItem('courseData', JSON.stringify(courseData));
+}
+
+/**
+ * Calcula y muestra el promedio semestral y el promedio general de carrera.
+ */
+function calculateSemesterAndOverallGPA() {
+    let totalCreditsOverall = 0;
+    let totalWeightedScoreOverall = 0;
+    let completedCoursesCountOverall = 0;
+
+    mallaCurricular.forEach(semester => {
+        let totalCreditsSemester = 0;
+        let totalWeightedScoreSemester = 0;
+        let completedCoursesCountSemester = 0;
+
+        semester.materias.forEach(course => {
+            const courseId = course.id;
+            const savedCourse = courseData[courseId] || {};
+
+            if (savedCourse.completed && savedCourse.finalGrade !== null && savedCourse.finalGrade !== undefined) {
+                totalCreditsSemester += course.creditos;
+                totalWeightedScoreSemester += (savedCourse.finalGrade * course.creditos);
+                completedCoursesCountSemester++;
+
+                if (savedCourse.includeInGpa) {
+                    totalCreditsOverall += course.creditos;
+                    totalWeightedScoreOverall += (savedCourse.finalGrade * course.creditos);
+                    completedCoursesCountOverall++;
+                }
+            }
+        });
+
+        // No se muestra el promedio semestral individualmente, solo el general.
+        // Si se quisiera, se podría añadir un elemento para cada semestre.
+    });
+
+    if (totalCreditsOverall > 0) {
+        const overallGPA = totalWeightedScoreOverall / totalCreditsOverall;
+        overallGpaSpan.textContent = overallGPA.toFixed(2);
+    } else {
+        overallGpaSpan.textContent = 'N/A';
+    }
+
+    // Para el promedio semestral, se podría mostrar el promedio del último semestre completado o el promedio del semestre actual si se quiere.
+    // Por simplicidad, el usuario pidió "Promedio General Semestral" que asumo es el promedio general de todos los semestres completados.
+    // Si se refiere al promedio del semestre actual que se está viendo, la lógica sería diferente.
+    // Mantenemos el promedio general de todos los cursos completados que afectan el promedio para "Promedio General Semestral" por ahora.
+    // Si el usuario quiere el promedio del semestre *actual* en el que se encuentra, necesitaríamos una forma de determinar el "semestre actual".
+    // Para evitar confusiones, el "Promedio General Semestral" se calculará como el promedio de los cursos completados en el semestre más avanzado que tenga al menos un curso completado.
+    let latestSemesterGPA = 'N/A';
+    let latestYear = 0;
+    let latestPeriod = 0;
+
+    for (let i = mallaCurricular.length - 1; i >= 0; i--) {
+        const semester = mallaCurricular[i];
+        let currentSemesterCredits = 0;
+        let currentSemesterWeightedScore = 0;
+        let currentSemesterCompletedCount = 0;
+
+        semester.materias.forEach(course => {
+            const courseId = course.id;
+            const savedCourse = courseData[courseId] || {};
+            if (savedCourse.completed && savedCourse.finalGrade !== null && savedCourse.finalGrade !== undefined) {
+                currentSemesterCredits += course.creditos;
+                currentSemesterWeightedScore += (savedCourse.finalGrade * course.creditos);
+                currentSemesterCompletedCount++;
+            }
+        });
+
+        if (currentSemesterCredits > 0) {
+            latestSemesterGPA = (currentSemesterWeightedScore / currentSemesterCredits).toFixed(2);
+            latestYear = semester.año;
+            latestPeriod = semester.periodo;
+            break; // Found the latest completed semester with grades
+        }
+    }
+    semesterGpaSpan.textContent = latestSemesterGPA;
 }
 
 // Event listener para el botón de generar resumen
 generateSummaryButton.addEventListener('click', async () => {
-    if (currentCourseForSummary) {
-        await generateCourseSummary(currentCourseForSummary.nombre);
+    if (currentCourseForModal) {
+        await generateCourseSummary(currentCourseForModal.nombre);
     }
 });
 
@@ -361,6 +684,80 @@ async function generateCourseSummary(courseName) {
 closeModalButton.addEventListener('click', () => {
     requisitesModal.classList.add('hidden'); // Ocultar el modal
 });
+
+// Event listener para el botón de calcular promedios
+calculateGpaButton.addEventListener('click', calculateSemesterAndOverallGPA);
+
+// --- Funcionalidad de Personalización de Fondo ---
+
+/**
+ * Guarda la configuración de fondo en localStorage.
+ */
+function saveBackgroundSettings() {
+    localStorage.setItem('backgroundColor', bodyElement.style.backgroundColor);
+    localStorage.setItem('backgroundImage', bodyElement.style.backgroundImage);
+}
+
+/**
+ * Carga la configuración de fondo desde localStorage.
+ */
+function loadBackgroundSettings() {
+    const savedColor = localStorage.getItem('backgroundColor');
+    const savedImage = localStorage.getItem('backgroundImage');
+
+    if (savedColor) {
+        bodyElement.style.backgroundColor = savedColor;
+        backgroundColorPicker.value = rgbToHex(savedColor) || '#f3f4f6';
+    }
+    if (savedImage && savedImage !== 'none') {
+        bodyElement.style.backgroundImage = savedImage;
+    }
+}
+
+/**
+ * Convierte un color RGB a formato HEX.
+ * @param {string} rgb - Color en formato 'rgb(r, g, b)'.
+ * @returns {string} Color en formato '#rrggbb'.
+ */
+function rgbToHex(rgb) {
+    if (!rgb || rgb.startsWith('linear-gradient')) return null; // No convertir gradientes
+    const parts = rgb.match(/\d+/g);
+    if (!parts || parts.length < 3) return null;
+    const hex = parts.map(x => {
+        const hexVal = parseInt(x).toString(16);
+        return hexVal.length === 1 ? '0' + hexVal : hexVal;
+    }).join('');
+    return `#${hex}`;
+}
+
+// Event listener para el selector de color de fondo
+backgroundColorPicker.addEventListener('input', (e) => {
+    bodyElement.style.backgroundColor = e.target.value;
+    saveBackgroundSettings();
+});
+
+// Event listener para la entrada de imagen de fondo
+backgroundImageInput.addEventListener('change', (e) => {
+    const file = e.target.files[0];
+    if (file) {
+        const reader = new FileReader();
+        reader.onload = (event) => {
+            bodyElement.style.backgroundImage = `url('${event.target.result}')`;
+            bodyElement.style.backgroundSize = 'cover';
+            bodyElement.style.backgroundPosition = 'center';
+            bodyElement.style.backgroundAttachment = 'fixed'; // Asegura que la imagen no se mueva con el scroll
+            saveBackgroundSettings();
+        };
+        reader.readAsDataURL(file);
+    }
+});
+
+// Event listener para limpiar la imagen de fondo
+clearBackgroundImageButton.addEventListener('click', () => {
+    bodyElement.style.backgroundImage = 'none';
+    saveBackgroundSettings();
+});
+
 
 // Renderizar la malla curricular cuando la página se carga
 document.addEventListener('DOMContentLoaded', renderCurriculum);
