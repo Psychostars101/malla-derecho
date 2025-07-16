@@ -8,45 +8,95 @@ body {
     font-family: 'Inter', sans-serif;
     background-color: #f3f4f6; /* gray-100 de Tailwind */
     color: #374151; /* gray-800 de Tailwind */
+    transition: background-color 0.3s ease-in-out; /* Transición suave para el cambio de fondo */
+    background-size: cover;
+    background-position: center;
+    background-attachment: fixed; /* Para que la imagen de fondo no se mueva con el scroll */
+}
+
+/* Estilos para el contenedor de cada año */
+.year-container {
+    background-color: #ffffff; /* white de Tailwind */
+    border-radius: 0.75rem; /* rounded-xl */
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05); /* shadow-lg */
+    padding: 2rem; /* p-8 */
+    margin-bottom: 2rem; /* mb-8 */
+}
+
+.year-title {
+    font-size: 2rem; /* text-3xl */
+    font-weight: 700; /* font-bold */
+    color: #1a202c; /* gray-900 */
+    text-align: center;
+    margin-bottom: 2rem; /* mb-8 */
+    position: relative;
+}
+
+.year-title::after {
+    content: '';
+    display: block;
+    width: 80px;
+    height: 4px;
+    background-color: #2563eb; /* blue-600 */
+    margin: 1rem auto 0;
+    border-radius: 2px;
+}
+
+/* Contenedor de semestres dentro de un año */
+.semesters-in-year {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1.5rem; /* gap-6 */
+}
+
+@media (min-width: 768px) { /* md breakpoint */
+    .semesters-in-year {
+        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    }
 }
 
 /* Estilos para el contenedor de cada semestre */
 .semester-column {
-    background-color: #ffffff; /* white de Tailwind */
+    background-color: #f8fafc; /* gray-50 de Tailwind */
     border-radius: 0.5rem; /* rounded-lg de Tailwind */
-    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06); /* shadow-md de Tailwind */
+    box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06); /* shadow-sm de Tailwind */
     padding: 1.5rem; /* p-6 de Tailwind */
-    margin-bottom: 1.5rem; /* mb-6 de Tailwind */
     display: flex;
     flex-direction: column;
-    gap: 1rem; /* Espacio entre los elementos del semestre */
+    gap: 0.75rem; /* Espacio entre los elementos del semestre */
+    border: 1px solid #e2e8f0; /* gray-200 */
+    min-height: 300px; /* Altura mínima para las columnas de semestre */
 }
 
 /* Estilos para el título del semestre */
-.semester-title {
-    font-size: 1.25rem; /* text-xl de Tailwind */
+.semester-subtitle {
+    font-size: 1.125rem; /* text-lg de Tailwind */
     font-weight: 600; /* font-semibold de Tailwind */
     color: #1e40af; /* blue-800 de Tailwind */
     margin-bottom: 1rem; /* mb-4 de Tailwind */
     text-align: center;
+    padding-bottom: 0.5rem;
+    border-bottom: 2px solid #bfdbfe; /* blue-200 */
 }
 
 /* Estilos para cada tarjeta de materia */
 .course-card {
-    background-color: #e0f2fe; /* blue-100 de Tailwind */
+    background-color: #eff6ff; /* blue-50 de Tailwind */
     border-radius: 0.375rem; /* rounded-md de Tailwind */
     padding: 1rem; /* p-4 de Tailwind */
     cursor: pointer;
-    transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+    transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out, background-color 0.2s ease-in-out;
     display: flex;
     flex-direction: column;
     justify-content: space-between;
-    min-height: 80px; /* Altura mínima para las tarjetas */
+    min-height: 90px; /* Altura mínima para las tarjetas */
+    border: 1px solid #dbeafe; /* blue-100 */
 }
 
 .course-card:hover {
     transform: translateY(-3px);
     box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+    background-color: #dbeafe; /* blue-100 */
 }
 
 /* Estilos para el nombre de la materia */
@@ -59,12 +109,13 @@ body {
 
 /* Estilos para el estado de la materia (completado/pendiente) */
 .course-status {
-    font-size: 0.875rem; /* text-sm de Tailwind */
+    font-size: 0.8rem; /* text-sm de Tailwind */
     margin-top: 0.5rem;
     padding: 0.25rem 0.5rem;
     border-radius: 0.25rem;
     text-align: center;
     align-self: flex-end; /* Alinea el estado a la derecha en la parte inferior */
+    font-weight: 500;
 }
 
 .status-pending {
@@ -80,6 +131,8 @@ body {
 .status-unavailable {
     background-color: #fee2e2; /* red-100 de Tailwind */
     color: #991b1b; /* red-800 de Tailwind */
+    cursor: not-allowed;
+    opacity: 0.7;
 }
 
 /* Estilos para el modal */
@@ -115,21 +168,57 @@ body {
     margin-right: auto;
 }
 
-/* Media Queries para responsividad */
-@media (min-width: 768px) { /* md breakpoint */
-    .semester-column {
-        min-height: 400px; /* Ajusta la altura mínima para columnas en pantallas medianas */
-    }
+/* Spinner de carga */
+.animate-spin {
+    animation: spin 1s linear infinite;
 }
 
-@media (min-width: 1024px) { /* lg breakpoint */
-    .semester-column {
-        min-height: 450px; /* Ajusta la altura mínima para columnas en pantallas grandes */
-    }
+@keyframes spin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
 }
 
-@media (min-width: 1280px) { /* xl breakpoint */
-    .semester-column {
-        min-height: 500px; /* Ajusta la altura mínima para columnas en pantallas extra grandes */
-    }
+/* Estilos para los inputs de calificación */
+.grade-input-group {
+    display: flex;
+    gap: 0.5rem;
+    margin-bottom: 0.5rem;
+    align-items: center;
 }
+
+.grade-input-group input[type="text"],
+.grade-input-group input[type="number"] {
+    flex: 1;
+    padding: 0.5rem;
+    border: 1px solid #d1d5db; /* gray-300 */
+    border-radius: 0.375rem; /* rounded-md */
+    font-size: 0.875rem; /* text-sm */
+}
+
+.grade-input-group button {
+    background-color: #ef4444; /* red-500 */
+    color: white;
+    padding: 0.5rem 0.75rem;
+    border-radius: 0.375rem;
+    font-size: 0.875rem;
+    transition: background-color 0.2s ease-in-out;
+}
+
+.grade-input-group button:hover {
+    background-color: #dc2626; /* red-600 */
+}
+
+/* Estilos para el pie de la tarjeta de curso (créditos) */
+.course-footer {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    margin-top: 0.5rem;
+    font-size: 0.8rem;
+    color: #4b5563; /* gray-600 */
+}
+
+.course-credits {
+    font-weight: 600;
+    color: #1e40af; /* blue-800 */
+    margin-left: 0.25rem;
