@@ -13,32 +13,95 @@
 </head>
 <body class="bg-gray-100 font-inter text-gray-800 transition-colors duration-300">
     <div class="container mx-auto p-4 sm:p-6 lg:p-8">
-        <h1 class="text-3xl sm:text-4xl font-bold text-center text-blue-800 mb-8">Malla Curricular Derecho - Universidad de Chile</h1>
+        <h1 class="text-3xl sm:text-4xl font-bold text-center text-primary-color mb-8">Malla Curricular Derecho - Universidad de Chile</h1>
 
-        <!-- Controles de Personalización de Fondo -->
-        <div class="bg-white rounded-lg shadow-md p-4 mb-8 flex flex-wrap items-center justify-center gap-4">
-            <label for="background-color-picker" class="font-semibold text-gray-700">Color de Fondo:</label>
-            <input type="color" id="background-color-picker" value="#f3f4f6" class="p-1 border border-gray-300 rounded-md">
-            
-            <label for="background-image-input" class="font-semibold text-gray-700">Imagen de Fondo:</label>
-            <input type="file" id="background-image-input" accept="image/*" class="text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100">
-            <button id="clear-background-image" class="bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded-lg shadow-md transition duration-300 ease-in-out text-sm">Limpiar Imagen</button>
-        </div>
-
-        <!-- Contenedor de Promedios -->
+        <!-- Controles de Personalización -->
         <div class="bg-white rounded-lg shadow-md p-4 mb-8">
-            <h2 class="text-2xl font-bold text-blue-700 mb-4 text-center">Promedios</h2>
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div class="p-4 bg-blue-50 rounded-md">
-                    <h3 class="text-lg font-semibold text-blue-800">Promedio General Semestral: <span id="semester-gpa" class="font-bold text-blue-900">N/A</span></h3>
+            <h2 class="text-2xl font-bold text-primary-color mb-4 text-center">Personalización</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-4">
+                <!-- Color de Fondo -->
+                <div class="flex items-center gap-2">
+                    <label for="background-color-picker" class="font-semibold text-gray-700">Fondo Color:</label>
+                    <input type="color" id="background-color-picker" value="#f3f4f6" class="p-1 border border-gray-300 rounded-md flex-grow">
                 </div>
-                <div class="p-4 bg-blue-50 rounded-md">
-                    <h3 class="text-lg font-semibold text-blue-800">Promedio General de Carrera: <span id="overall-gpa" class="font-bold text-blue-900">N/A</span></h3>
+                <!-- Imagen de Fondo -->
+                <div class="flex items-center gap-2">
+                    <label for="background-image-input" class="font-semibold text-gray-700">Fondo Imagen:</label>
+                    <input type="file" id="background-image-input" accept="image/*" class="text-sm text-gray-500 file:mr-2 file:py-1 file:px-2 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100 flex-grow">
+                    <button id="clear-background-image" class="bg-red-500 hover:bg-red-600 text-white font-bold py-1 px-2 rounded-lg shadow-md transition duration-300 ease-in-out text-sm">Limpiar</button>
+                </div>
+                <!-- Color Principal -->
+                <div class="flex items-center gap-2">
+                    <label for="primary-color-picker" class="font-semibold text-gray-700">Color Principal:</label>
+                    <input type="color" id="primary-color-picker" value="#2563eb" class="p-1 border border-gray-300 rounded-md flex-grow">
+                </div>
+                <!-- Color Secundario -->
+                <div class="flex items-center gap-2">
+                    <label for="secondary-color-picker" class="font-semibold text-gray-700">Color Secundario:</label>
+                    <input type="color" id="secondary-color-picker" value="#eff6ff" class="p-1 border border-gray-300 rounded-md flex-grow">
+                </div>
+                <!-- Radio del Borde -->
+                <div class="flex items-center gap-2">
+                    <label for="border-radius-slider" class="font-semibold text-gray-700">Radio Borde:</label>
+                    <input type="range" id="border-radius-slider" min="0" max="20" value="8" class="flex-grow">
+                    <span id="border-radius-value" class="text-sm text-gray-600">8px</span>
+                </div>
+                <!-- Intensidad de Sombra -->
+                <div class="flex items-center gap-2">
+                    <label for="shadow-intensity-slider" class="font-semibold text-gray-700">Sombra:</label>
+                    <input type="range" id="shadow-intensity-slider" min="0" max="3" value="1" class="flex-grow">
+                    <span id="shadow-intensity-value" class="text-sm text-gray-600">Baja</span>
+                </div>
+                <!-- Fuente -->
+                <div class="flex items-center gap-2">
+                    <label for="font-family-select" class="font-semibold text-gray-700">Fuente:</label>
+                    <select id="font-family-select" class="p-2 border border-gray-300 rounded-md flex-grow">
+                        <option value="Inter, sans-serif">Inter</option>
+                        <option value="Roboto, sans-serif">Roboto</option>
+                        <option value="Open Sans, sans-serif">Open Sans</option>
+                        <option value="Lato, sans-serif">Lato</option>
+                        <option value="Montserrat, sans-serif">Montserrat</option>
+                        <option value="Merriweather, serif">Merriweather</option>
+                        <option value="Georgia, serif">Georgia</option>
+                    </select>
+                </div>
+                <!-- Columnas de Semestre -->
+                <div class="flex items-center gap-2">
+                    <label for="semester-columns-select" class="font-semibold text-gray-700">Columnas Semestre:</label>
+                    <select id="semester-columns-select" class="p-2 border border-gray-300 rounded-md flex-grow">
+                        <option value="1">1 Columna</option>
+                        <option value="2">2 Columnas</option>
+                        <option value="3" selected>3 Columnas</option>
+                        <option value="4">4 Columnas</option>
+                        <option value="5">5 Columnas</option>
+                    </select>
                 </div>
             </div>
-             <div class="mt-4 text-center">
+            <div class="text-center mt-4">
+                <button id="reset-customization" class="bg-gray-500 hover:bg-gray-600 text-white font-bold py-2 px-4 rounded-lg shadow-md transition duration-300 ease-in-out">Restablecer Personalización</button>
+            </div>
+        </div>
+
+        <!-- Contenedor de Promedios y Créditos -->
+        <div class="bg-white rounded-lg shadow-md p-4 mb-8">
+            <h2 class="text-2xl font-bold text-primary-color mb-4 text-center">Progreso y Promedios</h2>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div class="p-4 bg-secondary-color rounded-md">
+                    <h3 class="text-lg font-semibold text-primary-color">Créditos Alcanzados: <span id="credits-counter" class="font-bold text-primary-color-dark">0</span></h3>
+                </div>
+                <div class="p-4 bg-secondary-color rounded-md">
+                    <h3 class="text-lg font-semibold text-primary-color">Promedio General Semestral: <span id="semester-gpa" class="font-bold text-primary-color-dark">N/A</span></h3>
+                </div>
+                <div class="p-4 bg-secondary-color rounded-md">
+                    <h3 class="text-lg font-semibold text-primary-color">Promedio General de Carrera: <span id="overall-gpa" class="font-bold text-primary-color-dark">N/A</span></h3>
+                </div>
+            </div>
+             <div class="mt-4 text-center flex justify-center gap-4">
                 <button id="calculate-gpa-button" class="bg-purple-600 hover:bg-purple-700 text-white font-bold py-2 px-4 rounded-lg shadow-md transition duration-300 ease-in-out">
                     Calcular Promedios
+                </button>
+                <button id="open-calendar-button" class="bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2 px-4 rounded-lg shadow-md transition duration-300 ease-in-out">
+                    Abrir Calendario 📅
                 </button>
             </div>
         </div>
@@ -52,11 +115,32 @@
         <!-- Modal para mostrar los requisitos de la materia, notas, profesor y generar resumen -->
         <div id="requisites-modal" class="fixed inset-0 bg-gray-600 bg-opacity-75 flex items-center justify-center p-4 hidden">
             <div class="bg-white rounded-lg shadow-xl p-6 w-full max-w-2xl overflow-y-auto max-h-[90vh]">
-                <h2 id="modal-title" class="text-2xl font-bold mb-4 text-blue-700"></h2>
+                <h2 id="modal-title" class="text-2xl font-bold mb-4 text-primary-color"></h2>
                 
+                <!-- Sección de Edición de Curso -->
+                <div class="mb-4 pt-4 border-t border-gray-200">
+                    <h3 class="text-xl font-semibold mb-2 text-primary-color">Editar Detalles del Curso:</h3>
+                    <div class="mb-2">
+                        <label for="edit-course-name" class="block text-sm font-medium text-gray-700">Nombre del Ramo:</label>
+                        <input type="text" id="edit-course-name" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary-color focus:ring-primary-color sm:text-sm p-2">
+                    </div>
+                    <div class="mb-2">
+                        <label for="edit-course-credits" class="block text-sm font-medium text-gray-700">Créditos (SCT):</label>
+                        <input type="number" id="edit-course-credits" min="0" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary-color focus:ring-primary-color sm:text-sm p-2">
+                    </div>
+                    <div class="mb-4">
+                        <label for="edit-course-type" class="block text-sm font-medium text-gray-700">Tipo de Ramo:</label>
+                        <select id="edit-course-type" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary-color focus:ring-primary-color sm:text-sm p-2">
+                            <option value="ninguno">Normal</option>
+                            <option value="electivo">Electivo Abierto</option>
+                            <option value="cfg">Formación Complementaria (CFG)</option>
+                        </select>
+                    </div>
+                </div>
+
                 <!-- Sección de Requisitos -->
-                <div class="mb-4">
-                    <h3 class="text-xl font-semibold mb-2 text-blue-600">Requisitos:</h3>
+                <div class="mb-4 pt-4 border-t border-gray-200">
+                    <h3 class="text-xl font-semibold mb-2 text-primary-color">Requisitos:</h3>
                     <ul id="modal-requisites-list" class="list-disc pl-5 text-gray-700">
                         <!-- Los requisitos se cargarán aquí -->
                     </ul>
@@ -64,15 +148,15 @@
 
                 <!-- Sección de Profesor y Notas -->
                 <div class="mt-6 pt-4 border-t border-gray-200">
-                    <h3 class="text-xl font-semibold mb-2 text-blue-600">Detalles del Curso:</h3>
+                    <h3 class="text-xl font-semibold mb-2 text-primary-color">Detalles Adicionales:</h3>
                     <div class="mb-4">
                         <label for="professor-name" class="block text-sm font-medium text-gray-700">Profesor:</label>
-                        <input type="text" id="professor-name" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm p-2" placeholder="Nombre del profesor">
+                        <input type="text" id="professor-name" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary-color focus:ring-primary-color sm:text-sm p-2" placeholder="Nombre del profesor">
                     </div>
 
                     <div class="mb-4">
                         <label for="course-notes" class="block text-sm font-medium text-gray-700">Notas del Curso:</label>
-                        <textarea id="course-notes" rows="3" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm p-2" placeholder="Escribe tus notas aquí..."></textarea>
+                        <textarea id="course-notes" rows="3" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary-color focus:ring-primary-color sm:text-sm p-2" placeholder="Escribe tus notas aquí..."></textarea>
                     </div>
 
                     <div class="mb-4">
@@ -84,11 +168,11 @@
                     </div>
 
                     <div class="mb-4">
-                        <p class="text-lg font-semibold text-gray-800">Nota Final del Ramo: <span id="final-course-grade" class="font-bold text-blue-900">N/A</span></p>
+                        <p class="text-lg font-semibold text-gray-800">Nota Final del Ramo: <span id="final-course-grade" class="font-bold text-primary-color-dark">N/A</span></p>
                     </div>
 
                     <div class="flex items-center mb-4">
-                        <input type="checkbox" id="include-in-gpa" class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded">
+                        <input type="checkbox" id="include-in-gpa" class="h-4 w-4 text-primary-color focus:ring-primary-color border-gray-300 rounded">
                         <label for="include-in-gpa" class="ml-2 block text-sm text-gray-900">Incluir en el cálculo del promedio general</label>
                     </div>
 
@@ -101,7 +185,7 @@
                         Generar Resumen con IA ✨
                         <span id="summary-loading-spinner" class="hidden ml-2 animate-spin rounded-full h-5 w-5 border-b-2 border-white"></span>
                     </button>
-                    <div id="summary-output" class="mt-4 p-4 bg-blue-50 rounded-md text-gray-800 text-sm hidden">
+                    <div id="summary-output" class="mt-4 p-4 bg-secondary-color rounded-md text-gray-800 text-sm hidden">
                         <!-- El resumen se cargará aquí -->
                     </div>
                     <div id="summary-error" class="mt-4 p-4 bg-red-100 border border-red-400 text-red-700 rounded-md hidden" role="alert">
@@ -109,7 +193,33 @@
                     </div>
                 </div>
 
-                <button id="close-modal" class="mt-6 bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-lg shadow-md transition duration-300 ease-in-out">Cerrar</button>
+                <button id="close-modal" class="mt-6 bg-primary-color hover:bg-primary-color-dark text-white font-bold py-2 px-4 rounded-lg shadow-md transition duration-300 ease-in-out">Cerrar</button>
+            </div>
+        </div>
+
+        <!-- Modal del Calendario -->
+        <div id="calendar-modal" class="fixed inset-0 bg-gray-600 bg-opacity-75 flex items-center justify-center p-4 hidden">
+            <div class="bg-white rounded-lg shadow-xl p-6 w-full max-w-lg overflow-y-auto max-h-[90vh]">
+                <h2 class="text-2xl font-bold text-primary-color mb-4 text-center">Calendario 📅</h2>
+                <div class="flex justify-between items-center mb-4">
+                    <button id="prev-month" class="bg-primary-color hover:bg-primary-color-dark text-white font-bold py-2 px-4 rounded-lg transition duration-300 ease-in-out">Anterior</button>
+                    <h3 id="current-month-year" class="text-xl font-semibold text-gray-800"></h3>
+                    <button id="next-month" class="bg-primary-color hover:bg-primary-color-dark text-white font-bold py-2 px-4 rounded-lg transition duration-300 ease-in-out">Siguiente</button>
+                </div>
+                <div class="grid grid-cols-7 text-center font-bold text-gray-600 mb-2">
+                    <span>Dom</span><span>Lun</span><span>Mar</span><span>Mié</span><span>Jue</span><span>Vie</span><span>Sáb</span>
+                </div>
+                <div id="calendar-days-grid" class="grid grid-cols-7 gap-1">
+                    <!-- Los días del calendario se cargarán aquí -->
+                </div>
+
+                <div class="mt-6 pt-4 border-t border-gray-200">
+                    <h3 class="text-xl font-semibold text-primary-color mb-2">Notas para <span id="selected-date-display" class="font-bold"></span>:</h3>
+                    <textarea id="event-notes-input" rows="4" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary-color focus:ring-primary-color sm:text-sm p-2" placeholder="Escribe tus notas para esta fecha..."></textarea>
+                    <button id="save-event-button" class="mt-3 w-full bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-4 rounded-lg shadow-md transition duration-300 ease-in-out">Guardar Notas</button>
+                </div>
+
+                <button id="close-calendar-modal" class="mt-6 bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-lg shadow-md transition duration-300 ease-in-out">Cerrar Calendario</button>
             </div>
         </div>
     </div>
