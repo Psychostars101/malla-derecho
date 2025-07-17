@@ -1,7 +1,7 @@
 // script.js
 
-// Datos de la malla curricular con créditos y campos adicionales
-const mallaCurricular = [
+// Datos de la malla curricular inicial con créditos y campos adicionales
+const defaultMallaCurricular = [
     {
         "año": 1,
         "periodo": 1,
@@ -130,6 +130,8 @@ const mallaCurricular = [
     }
 ];
 
+// Cargar malla curricular desde localStorage o usar la predeterminada
+let mallaCurricular = JSON.parse(localStorage.getItem('mallaCurricular')) || defaultMallaCurricular;
 
 // Objeto para almacenar el estado de las materias completadas y otros datos personalizados
 let courseData = JSON.parse(localStorage.getItem('courseData')) || {};
@@ -154,7 +156,10 @@ const summaryOutput = document.getElementById('summary-output');
 const summaryLoadingSpinner = document.getElementById('summary-loading-spinner');
 const summaryError = document.getElementById('summary-error');
 
-// Referencias para los nuevos campos del modal
+// Referencias para los nuevos campos del modal (edición de curso)
+const editCourseNameInput = document.getElementById('edit-course-name');
+const editCourseCreditsInput = document.getElementById('edit-course-credits');
+const editCourseTypeSelect = document.getElementById('edit-course-type');
 const professorNameInput = document.getElementById('professor-name');
 const courseNotesTextarea = document.getElementById('course-notes');
 const gradesContainer = document.getElementById('grades-container');
@@ -163,22 +168,66 @@ const finalCourseGradeSpan = document.getElementById('final-course-grade');
 const saveCourseDetailsButton = document.getElementById('save-course-details');
 const includeInGpaCheckbox = document.getElementById('include-in-gpa');
 
-// Referencias para los promedios
+// Referencias para los promedios y créditos
+const creditsCounterSpan = document.getElementById('credits-counter');
 const semesterGpaSpan = document.getElementById('semester-gpa');
 const overallGpaSpan = document.getElementById('overall-gpa');
 const calculateGpaButton = document.getElementById('calculate-gpa-button');
 
-// Referencias para la personalización del fondo
+// Referencias para la personalización del fondo y tema
 const backgroundColorPicker = document.getElementById('background-color-picker');
 const backgroundImageInput = document.getElementById('background-image-input');
 const clearBackgroundImageButton = document.getElementById('clear-background-image');
+const primaryColorPicker = document.getElementById('primary-color-picker');
+const secondaryColorPicker = document.getElementById('secondary-color-picker');
+const borderRadiusSlider = document.getElementById('border-radius-slider');
+const borderRadiusValueSpan = document.getElementById('border-radius-value');
+const shadowIntensitySlider = document.getElementById('shadow-intensity-slider');
+const shadowIntensityValueSpan = document.getElementById('shadow-intensity-value');
+const fontFamilySelect = document.getElementById('font-family-select');
+const semesterColumnsSelect = document.getElementById('semester-columns-select');
+const resetCustomizationButton = document.getElementById('reset-customization');
+
 const bodyElement = document.body;
+const rootElement = document.documentElement; // Para variables CSS
+
+// Referencias del calendario
+const openCalendarButton = document.getElementById('open-calendar-button');
+const calendarModal = document.getElementById('calendar-modal');
+const closeCalendarModalButton = document.getElementById('close-calendar-modal');
+const prevMonthButton = document.getElementById('prev-month');
+const nextMonthButton = document.getElementById('next-month');
+const currentMonthYearDisplay = document.getElementById('current-month-year');
+const calendarDaysGrid = document.getElementById('calendar-days-grid');
+const selectedDateDisplay = document.getElementById('selected-date-display');
+const eventNotesInput = document.getElementById('event-notes-input');
+const saveEventButton = document.getElementById('save-event-button');
+
+// Variables del calendario
+let currentCalendarDate = new Date(); // Fecha actual para el calendario
+let calendarEvents = JSON.parse(localStorage.getItem('calendarEvents')) || {}; // { 'YYYY-MM-DD': 'Notas del evento' }
+let selectedCalendarDate = null; // La fecha seleccionada en el calendario
 
 // Variable para almacenar la materia actualmente seleccionada en el modal
 let currentCourseForModal = null;
 
-// Cargar la configuración de fondo guardada
-loadBackgroundSettings();
+// Colores para los fondos de semestre (para que contrasten con los ramos)
+const semesterBackgroundColors = [
+    '#e0f7fa', // Light Cyan
+    '#f3e5f5', // Light Purple
+    '#fffde7', // Light Yellow
+    '#e8f5e9', // Light Green
+    '#fbe9e7', // Light Orange
+    '#e3f2fd', // Lighter Blue
+    '#fce4ec', // Lighter Pink
+    '#f1f8e9', // Very Light Green
+    '#ede7f6', // Very Light Purple
+    '#ffe0b2'  // Light Peach
+];
+
+
+// Cargar la configuración de personalización guardada
+loadCustomizationSettings();
 
 /**
  * Función para obtener el nombre de una materia por su ID.
@@ -241,22 +290,41 @@ function renderCurriculum() {
         years[semester.año].push(semester);
     });
 
+    let semesterColorIndex = 0; // Para ciclar los colores de fondo de los semestres
+
     for (const yearNum in years) {
         const yearContainer = document.createElement('div');
         yearContainer.className = 'year-container';
 
+        const yearHeader = document.createElement('div');
+        yearHeader.className = 'year-header';
+        yearHeader.dataset.year = yearNum; // Almacenar el año para el toggle
+
         const yearTitle = document.createElement('h2');
         yearTitle.className = 'year-title';
         yearTitle.textContent = `Año ${yearNum}`;
-        yearContainer.appendChild(yearTitle);
+        yearHeader.appendChild(yearTitle);
+
+        const toggleIcon = document.createElement('span');
+        toggleIcon.className = 'toggle-icon';
+        toggleIcon.textContent = '▶'; // Icono de flecha
+        yearHeader.appendChild(toggleIcon);
+
+        yearContainer.appendChild(yearHeader);
 
         const semestersInYearDiv = document.createElement('div');
         semestersInYearDiv.className = 'semesters-in-year';
+        // Aplicar el número de columnas seleccionado
+        semestersInYearDiv.style.gridTemplateColumns = `repeat(${customizationSettings.semesterColumns}, 1fr)`;
+
 
         years[yearNum].forEach(semester => {
             // Crear un div para cada columna de semestre
             const semesterColumn = document.createElement('div');
             semesterColumn.className = 'semester-column';
+            // Asignar color de fondo único al semestre
+            semesterColumn.style.setProperty('--semester-bg-color', semesterBackgroundColors[semesterColorIndex % semesterBackgroundColors.length]);
+            semesterColorIndex++;
 
             // Crear el título del semestre
             const semesterSubtitle = document.createElement('h3');
@@ -277,7 +345,8 @@ function renderCurriculum() {
                 let isClickable = true; // Por defecto, las materias son clicables
 
                 const isElectiveOrCfg = course.tipo === 'electivo' || course.tipo === 'cfg';
-                const isYearUnlocked = parseInt(yearNum) <= (maxCompletedYear > 0 ? maxCompletedYear + 1 : 1); // Permite ver el siguiente año si hay algo completado
+                // La restricción de año se aplica a cursos "normales"
+                const isYearRestricted = !isElectiveOrCfg && parseInt(yearNum) > (maxCompletedYear + 1);
 
                 if (completedCourses[course.id]) {
                     statusClass = 'status-completed';
@@ -286,7 +355,7 @@ function renderCurriculum() {
                     statusClass = 'status-unavailable';
                     statusText = 'No Disponible (Requisitos)';
                     isClickable = false;
-                } else if (!isElectiveOrCfg && parseInt(yearNum) > (maxCompletedYear + 1)) {
+                } else if (isYearRestricted) {
                      // Restricción por año para cursos no electivos/CFG
                     statusClass = 'status-unavailable';
                     statusText = 'No Disponible (Año)';
@@ -342,8 +411,14 @@ function renderCurriculum() {
         });
         yearContainer.appendChild(semestersInYearDiv);
         curriculumGrid.appendChild(yearContainer);
+
+        // Añadir evento de click para expandir/colapsar el año
+        yearHeader.addEventListener('click', () => {
+            yearHeader.classList.toggle('expanded');
+        });
     }
     calculateSemesterAndOverallGPA(); // Recalcular promedios al renderizar
+    updateCreditsCounter(); // Actualizar contador de créditos
 }
 
 /**
@@ -380,6 +455,19 @@ function showCourseDetailsModal(course) {
     summaryError.classList.add('hidden'); // Ocultar errores
     summaryLoadingSpinner.classList.add('hidden'); // Ocultar spinner
 
+    // Cargar datos guardados para el curso
+    const savedCourse = courseData[course.id] || {};
+
+    // Rellenar campos de edición de curso
+    editCourseNameInput.value = course.nombre;
+    editCourseCreditsInput.value = course.creditos;
+    editCourseTypeSelect.value = course.tipo;
+
+    // Rellenar campos adicionales
+    professorNameInput.value = savedCourse.professor || '';
+    courseNotesTextarea.value = savedCourse.notes || '';
+    includeInGpaCheckbox.checked = savedCourse.includeInGpa !== undefined ? savedCourse.includeInGpa : true; // Por defecto true
+
     // Mostrar requisitos
     if (course.requisitos && course.requisitos.length > 0) {
         course.requisitos.forEach(reqId => {
@@ -392,12 +480,6 @@ function showCourseDetailsModal(course) {
         listItem.textContent = 'No tiene requisitos.';
         modalRequisitesList.appendChild(listItem);
     }
-
-    // Cargar datos guardados para el curso
-    const savedCourse = courseData[course.id] || {};
-    professorNameInput.value = savedCourse.professor || '';
-    courseNotesTextarea.value = savedCourse.notes || '';
-    includeInGpaCheckbox.checked = savedCourse.includeInGpa !== undefined ? savedCourse.includeInGpa : true; // Por defecto true
 
     // Cargar y renderizar calificaciones
     renderGradesInput(savedCourse.grades || []);
@@ -497,7 +579,7 @@ function calculateFinalCourseGrade() {
             totalWeight += weight;
             hasValidGrades = true;
             currentGrades.push({ nombre: name, nota: score, ponderacion: weight });
-        } else if (name || !isNaN(score) || !isNaN(weight)) { // If any field is partially filled, consider it for saving
+        } else if (name || !isNaN(score) || !isNaN(weight)) { // Si algún campo está parcialmente lleno, considéralo para guardar
              currentGrades.push({ nombre: name, nota: isNaN(score) ? null : score, ponderacion: isNaN(weight) ? null : weight });
         }
     });
@@ -509,7 +591,7 @@ function calculateFinalCourseGrade() {
         finalCourseGradeSpan.textContent = 'N/A';
     }
 
-    // Actualizar el objeto currentCourseForModal con las calificaciones actuales
+    // Actualizar el objeto courseData con las calificaciones actuales y nota final del ramo
     if (currentCourseForModal) {
         if (!courseData[currentCourseForModal.id]) {
             courseData[currentCourseForModal.id] = {};
@@ -520,11 +602,27 @@ function calculateFinalCourseGrade() {
 }
 
 /**
- * Guarda los detalles del curso (profesor, notas, calificaciones) en localStorage.
+ * Guarda los detalles del curso (nombre, créditos, tipo, profesor, notas, calificaciones) en localStorage.
  */
 saveCourseDetailsButton.addEventListener('click', () => {
     if (currentCourseForModal) {
         const courseId = currentCourseForModal.id;
+        
+        // Actualizar la malla curricular con los nuevos datos del curso
+        let courseFound = false;
+        for (const semester of mallaCurricular) {
+            const courseIndex = semester.materias.findIndex(m => m.id === courseId);
+            if (courseIndex !== -1) {
+                semester.materias[courseIndex].nombre = editCourseNameInput.value;
+                semester.materias[courseIndex].creditos = parseInt(editCourseCreditsInput.value) || 0;
+                semester.materias[courseIndex].tipo = editCourseTypeSelect.value;
+                courseFound = true;
+                break;
+            }
+        }
+        saveMallaCurricular(); // Guardar la malla curricular actualizada
+
+        // Guardar datos personalizados del curso
         if (!courseData[courseId]) {
             courseData[courseId] = {};
         }
@@ -535,16 +633,41 @@ saveCourseDetailsButton.addEventListener('click', () => {
         // Las calificaciones y la nota final ya se actualizan en calculateFinalCourseGrade
         saveCourseData();
         requisitesModal.classList.add('hidden');
-        renderCurriculum(); // Re-render para actualizar posibles cambios en el estado de disponibilidad por notas
+        renderCurriculum(); // Re-render para actualizar posibles cambios en el estado de disponibilidad por notas o datos del curso
     }
 });
 
 /**
- * Guarda los datos del curso en localStorage.
+ * Guarda los datos personalizados del curso en localStorage.
  */
 function saveCourseData() {
     localStorage.setItem('courseData', JSON.stringify(courseData));
 }
+
+/**
+ * Guarda la estructura de la malla curricular en localStorage.
+ */
+function saveMallaCurricular() {
+    localStorage.setItem('mallaCurricular', JSON.stringify(mallaCurricular));
+}
+
+/**
+ * Calcula y actualiza el contador de créditos alcanzados.
+ */
+function updateCreditsCounter() {
+    let totalCreditsAchieved = 0;
+    mallaCurricular.forEach(semester => {
+        semester.materias.forEach(course => {
+            const courseId = course.id;
+            const savedCourse = courseData[courseId] || {};
+            if (savedCourse.completed) { // Solo contar si el curso está marcado como completado
+                totalCreditsAchieved += course.creditos;
+            }
+        });
+    });
+    creditsCounterSpan.textContent = totalCreditsAchieved;
+}
+
 
 /**
  * Calcula y muestra el promedio semestral y el promedio general de carrera.
@@ -552,32 +675,18 @@ function saveCourseData() {
 function calculateSemesterAndOverallGPA() {
     let totalCreditsOverall = 0;
     let totalWeightedScoreOverall = 0;
-    let completedCoursesCountOverall = 0;
 
+    // Calcular promedio general de carrera
     mallaCurricular.forEach(semester => {
-        let totalCreditsSemester = 0;
-        let totalWeightedScoreSemester = 0;
-        let completedCoursesCountSemester = 0;
-
         semester.materias.forEach(course => {
             const courseId = course.id;
             const savedCourse = courseData[courseId] || {};
 
-            if (savedCourse.completed && savedCourse.finalGrade !== null && savedCourse.finalGrade !== undefined) {
-                totalCreditsSemester += course.creditos;
-                totalWeightedScoreSemester += (savedCourse.finalGrade * course.creditos);
-                completedCoursesCountSemester++;
-
-                if (savedCourse.includeInGpa) {
-                    totalCreditsOverall += course.creditos;
-                    totalWeightedScoreOverall += (savedCourse.finalGrade * course.creditos);
-                    completedCoursesCountOverall++;
-                }
+            if (savedCourse.completed && savedCourse.finalGrade !== null && savedCourse.finalGrade !== undefined && savedCourse.includeInGpa) {
+                totalCreditsOverall += course.creditos;
+                totalWeightedScoreOverall += (savedCourse.finalGrade * course.creditos);
             }
         });
-
-        // No se muestra el promedio semestral individualmente, solo el general.
-        // Si se quisiera, se podría añadir un elemento para cada semestre.
     });
 
     if (totalCreditsOverall > 0) {
@@ -587,21 +696,12 @@ function calculateSemesterAndOverallGPA() {
         overallGpaSpan.textContent = 'N/A';
     }
 
-    // Para el promedio semestral, se podría mostrar el promedio del último semestre completado o el promedio del semestre actual si se quiere.
-    // Por simplicidad, el usuario pidió "Promedio General Semestral" que asumo es el promedio general de todos los semestres completados.
-    // Si se refiere al promedio del semestre actual que se está viendo, la lógica sería diferente.
-    // Mantenemos el promedio general de todos los cursos completados que afectan el promedio para "Promedio General Semestral" por ahora.
-    // Si el usuario quiere el promedio del semestre *actual* en el que se encuentra, necesitaríamos una forma de determinar el "semestre actual".
-    // Para evitar confusiones, el "Promedio General Semestral" se calculará como el promedio de los cursos completados en el semestre más avanzado que tenga al menos un curso completado.
+    // Calcular promedio del último semestre completado con notas
     let latestSemesterGPA = 'N/A';
-    let latestYear = 0;
-    let latestPeriod = 0;
-
     for (let i = mallaCurricular.length - 1; i >= 0; i--) {
         const semester = mallaCurricular[i];
         let currentSemesterCredits = 0;
         let currentSemesterWeightedScore = 0;
-        let currentSemesterCompletedCount = 0;
 
         semester.materias.forEach(course => {
             const courseId = course.id;
@@ -609,15 +709,12 @@ function calculateSemesterAndOverallGPA() {
             if (savedCourse.completed && savedCourse.finalGrade !== null && savedCourse.finalGrade !== undefined) {
                 currentSemesterCredits += course.creditos;
                 currentSemesterWeightedScore += (savedCourse.finalGrade * course.creditos);
-                currentSemesterCompletedCount++;
             }
         });
 
         if (currentSemesterCredits > 0) {
             latestSemesterGPA = (currentSemesterWeightedScore / currentSemesterCredits).toFixed(2);
-            latestYear = semester.año;
-            latestPeriod = semester.periodo;
-            break; // Found the latest completed semester with grades
+            break; // Se encontró el semestre más reciente con cursos completados y notas
         }
     }
     semesterGpaSpan.textContent = latestSemesterGPA;
@@ -688,30 +785,101 @@ closeModalButton.addEventListener('click', () => {
 // Event listener para el botón de calcular promedios
 calculateGpaButton.addEventListener('click', calculateSemesterAndOverallGPA);
 
-// --- Funcionalidad de Personalización de Fondo ---
+// --- Funcionalidad de Personalización General ---
+
+const defaultCustomizationSettings = {
+    backgroundColor: '#f3f4f6',
+    backgroundImage: 'linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)), url(\'https://placehold.co/1920x1080/2c3e50/ecf0f1?text=Justicia%20y%20Derecho\')',
+    primaryColor: '#2563eb',
+    secondaryColor: '#eff6ff',
+    borderRadius: '8', // en px
+    shadowIntensity: '1', // 0: none, 1: base, 2: medium, 3: strong
+    fontFamily: 'Inter, sans-serif',
+    semesterColumns: '3'
+};
+
+let customizationSettings = JSON.parse(localStorage.getItem('customizationSettings')) || defaultCustomizationSettings;
 
 /**
- * Guarda la configuración de fondo en localStorage.
+ * Guarda la configuración de personalización en localStorage.
  */
-function saveBackgroundSettings() {
-    localStorage.setItem('backgroundColor', bodyElement.style.backgroundColor);
-    localStorage.setItem('backgroundImage', bodyElement.style.backgroundImage);
+function saveCustomizationSettings() {
+    localStorage.setItem('customizationSettings', JSON.stringify(customizationSettings));
+    applyCustomizationSettings(); // Aplicar inmediatamente los cambios
 }
 
 /**
- * Carga la configuración de fondo desde localStorage.
+ * Carga la configuración de personalización desde localStorage y la aplica.
  */
-function loadBackgroundSettings() {
-    const savedColor = localStorage.getItem('backgroundColor');
-    const savedImage = localStorage.getItem('backgroundImage');
+function loadCustomizationSettings() {
+    // Aplicar colores y fondo
+    bodyElement.style.backgroundColor = customizationSettings.backgroundColor;
+    bodyElement.style.backgroundImage = customizationSettings.backgroundImage;
+    if (customizationSettings.backgroundImage !== 'none') {
+        bodyElement.style.backgroundSize = 'cover';
+        bodyElement.style.backgroundPosition = 'center';
+        bodyElement.style.backgroundAttachment = 'fixed';
+        bodyElement.style.backgroundBlendMode = 'multiply'; // Asegura el blend mode para el fondo por defecto
+        bodyElement.style.color = '#ecf0f1'; // Color de texto claro para fondo oscuro
+    } else {
+        bodyElement.style.backgroundBlendMode = 'normal';
+        bodyElement.style.color = '#374151'; // Color de texto oscuro para fondo claro
+    }
 
-    if (savedColor) {
-        bodyElement.style.backgroundColor = savedColor;
-        backgroundColorPicker.value = rgbToHex(savedColor) || '#f3f4f6';
+    // Aplicar variables CSS
+    rootElement.style.setProperty('--primary-color', customizationSettings.primaryColor);
+    // Calcular un color oscuro para primary-color-dark
+    const primaryColorRgb = hexToRgb(customizationSettings.primaryColor);
+    if (primaryColorRgb) {
+        const darkPrimaryColor = `rgb(${primaryColorRgb.r * 0.8}, ${primaryColorRgb.g * 0.8}, ${primaryColorRgb.b * 0.8})`;
+        rootElement.style.setProperty('--primary-color-dark', darkPrimaryColor);
+    } else {
+        rootElement.style.setProperty('--primary-color-dark', '#1d4ed8'); // Fallback
     }
-    if (savedImage && savedImage !== 'none') {
-        bodyElement.style.backgroundImage = savedImage;
+
+    rootElement.style.setProperty('--secondary-color', customizationSettings.secondaryColor);
+    rootElement.style.setProperty('--border-radius', `${customizationSettings.borderRadius}px`);
+    rootElement.style.setProperty('--font-family', customizationSettings.fontFamily);
+    rootElement.style.setProperty('--semester-columns', customizationSettings.semesterColumns);
+
+
+    // Aplicar sombras
+    let shadowBase = 'none';
+    let shadowHover = 'none';
+    if (customizationSettings.shadowIntensity === '1') {
+        shadowBase = '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)';
+        shadowHover = '0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05)';
+    } else if (customizationSettings.shadowIntensity === '2') {
+        shadowBase = '0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05)';
+        shadowHover = '0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)';
+    } else if (customizationSettings.shadowIntensity === '3') {
+        shadowBase = '0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)';
+        shadowHover = '0 25px 50px -12px rgba(0, 0, 0, 0.25)';
     }
+    rootElement.style.setProperty('--shadow-base', shadowBase);
+    rootElement.style.setProperty('--shadow-hover', shadowHover);
+
+    // Actualizar valores en los controles de UI
+    backgroundColorPicker.value = customizationSettings.backgroundColor;
+    primaryColorPicker.value = customizationSettings.primaryColor;
+    secondaryColorPicker.value = customizationSettings.secondaryColor;
+    borderRadiusSlider.value = customizationSettings.borderRadius;
+    borderRadiusValueSpan.textContent = `${customizationSettings.borderRadius}px`;
+    shadowIntensitySlider.value = customizationSettings.shadowIntensity;
+    shadowIntensityValueSpan.textContent = getShadowText(customizationSettings.shadowIntensity);
+    fontFamilySelect.value = customizationSettings.fontFamily;
+    semesterColumnsSelect.value = customizationSettings.semesterColumns;
+
+    // Re-renderizar la malla para aplicar cambios de columnas
+    renderCurriculum();
+}
+
+/**
+ * Aplica la configuración de personalización actual a los estilos.
+ * Se llama después de cargar o guardar la configuración.
+ */
+function applyCustomizationSettings() {
+    loadCustomizationSettings(); // Simplemente recarga y aplica
 }
 
 /**
@@ -720,7 +888,7 @@ function loadBackgroundSettings() {
  * @returns {string} Color en formato '#rrggbb'.
  */
 function rgbToHex(rgb) {
-    if (!rgb || rgb.startsWith('linear-gradient')) return null; // No convertir gradientes
+    if (!rgb || rgb.startsWith('linear-gradient')) return null;
     const parts = rgb.match(/\d+/g);
     if (!parts || parts.length < 3) return null;
     const hex = parts.map(x => {
@@ -730,33 +898,235 @@ function rgbToHex(rgb) {
     return `#${hex}`;
 }
 
-// Event listener para el selector de color de fondo
+/**
+ * Convierte un color HEX a formato RGB.
+ * @param {string} hex - Color en formato '#rrggbb'.
+ * @returns {object} Objeto con propiedades r, g, b.
+ */
+function hexToRgb(hex) {
+    const bigint = parseInt(hex.slice(1), 16);
+    const r = (bigint >> 16) & 255;
+    const g = (bigint >> 8) & 255;
+    const b = bigint & 255;
+    return { r, g, b };
+}
+
+
+/**
+ * Obtiene el texto descriptivo para la intensidad de sombra.
+ * @param {string} value - El valor de la intensidad (0-3).
+ * @returns {string} Texto descriptivo.
+ */
+function getShadowText(value) {
+    switch (value) {
+        case '0': return 'Ninguna';
+        case '1': return 'Baja';
+        case '2': return 'Media';
+        case '3': return 'Fuerte';
+        default: return 'Baja';
+    }
+}
+
+// --- Event Listeners para Personalización ---
+
 backgroundColorPicker.addEventListener('input', (e) => {
-    bodyElement.style.backgroundColor = e.target.value;
-    saveBackgroundSettings();
+    customizationSettings.backgroundColor = e.target.value;
+    customizationSettings.backgroundImage = 'none'; // Clear image if color is picked
+    saveCustomizationSettings();
 });
 
-// Event listener para la entrada de imagen de fondo
 backgroundImageInput.addEventListener('change', (e) => {
     const file = e.target.files[0];
     if (file) {
         const reader = new FileReader();
         reader.onload = (event) => {
-            bodyElement.style.backgroundImage = `url('${event.target.result}')`;
-            bodyElement.style.backgroundSize = 'cover';
-            bodyElement.style.backgroundPosition = 'center';
-            bodyElement.style.backgroundAttachment = 'fixed'; // Asegura que la imagen no se mueva con el scroll
-            saveBackgroundSettings();
+            customizationSettings.backgroundImage = `url('${event.target.result}')`;
+            saveCustomizationSettings();
         };
         reader.readAsDataURL(file);
     }
 });
 
-// Event listener para limpiar la imagen de fondo
 clearBackgroundImageButton.addEventListener('click', () => {
-    bodyElement.style.backgroundImage = 'none';
-    saveBackgroundSettings();
+    customizationSettings.backgroundImage = 'none';
+    saveCustomizationSettings();
 });
+
+primaryColorPicker.addEventListener('input', (e) => {
+    customizationSettings.primaryColor = e.target.value;
+    saveCustomizationSettings();
+});
+
+secondaryColorPicker.addEventListener('input', (e) => {
+    customizationSettings.secondaryColor = e.target.value;
+    saveCustomizationSettings();
+});
+
+borderRadiusSlider.addEventListener('input', (e) => {
+    customizationSettings.borderRadius = e.target.value;
+    borderRadiusValueSpan.textContent = `${e.target.value}px`;
+    saveCustomizationSettings();
+});
+
+shadowIntensitySlider.addEventListener('input', (e) => {
+    customizationSettings.shadowIntensity = e.target.value;
+    shadowIntensityValueSpan.textContent = getShadowText(e.target.value);
+    saveCustomizationSettings();
+});
+
+fontFamilySelect.addEventListener('change', (e) => {
+    customizationSettings.fontFamily = e.target.value;
+    saveCustomizationSettings();
+});
+
+semesterColumnsSelect.addEventListener('change', (e) => {
+    customizationSettings.semesterColumns = e.target.value;
+    saveCustomizationSettings();
+});
+
+resetCustomizationButton.addEventListener('click', () => {
+    localStorage.removeItem('customizationSettings');
+    localStorage.removeItem('mallaCurricular'); // También restablecer la malla a la original
+    localStorage.removeItem('courseData'); // Y los datos de los cursos
+    customizationSettings = { ...defaultCustomizationSettings }; // Reset to default
+    mallaCurricular = JSON.parse(JSON.stringify(defaultMallaCurricular)); // Deep copy to reset
+    courseData = {}; // Clear course data
+    completedCourses = {}; // Clear completed courses
+    applyCustomizationSettings();
+    renderCurriculum(); // Re-render everything
+});
+
+// --- Funcionalidad del Calendario ---
+
+openCalendarButton.addEventListener('click', () => {
+    calendarModal.classList.remove('hidden');
+    renderCalendar();
+});
+
+closeCalendarModalButton.addEventListener('click', () => {
+    calendarModal.classList.add('hidden');
+});
+
+prevMonthButton.addEventListener('click', () => {
+    currentCalendarDate.setMonth(currentCalendarDate.getMonth() - 1);
+    renderCalendar();
+});
+
+nextMonthButton.addEventListener('click', () => {
+    currentCalendarDate.setMonth(currentCalendarDate.getMonth() + 1);
+    renderCalendar();
+});
+
+saveEventButton.addEventListener('click', () => {
+    if (selectedCalendarDate) {
+        const dateKey = formatDate(selectedCalendarDate);
+        calendarEvents[dateKey] = eventNotesInput.value;
+        localStorage.setItem('calendarEvents', JSON.stringify(calendarEvents));
+        renderCalendar(); // Re-render para mostrar el punto de evento
+    }
+});
+
+/**
+ * Renderiza el calendario para el mes y año actuales.
+ */
+function renderCalendar() {
+    calendarDaysGrid.innerHTML = '';
+    currentMonthYearDisplay.textContent = currentCalendarDate.toLocaleString('es-ES', { month: 'long', year: 'numeric' });
+
+    const year = currentCalendarDate.getFullYear();
+    const month = currentCalendarDate.getMonth(); // 0-indexed
+
+    // Obtener el primer día del mes
+    const firstDayOfMonth = new Date(year, month, 1);
+    // Obtener el último día del mes
+    const lastDayOfMonth = new Date(year, month + 1, 0);
+
+    // Calcular el día de la semana del primer día (0=Dom, 1=Lun...)
+    const startDayOfWeek = firstDayOfMonth.getDay();
+
+    // Días del mes anterior para rellenar el inicio
+    const prevMonthLastDay = new Date(year, month, 0).getDate();
+    for (let i = startDayOfWeek - 1; i >= 0; i--) {
+        const dayElement = document.createElement('div');
+        dayElement.className = 'calendar-day';
+        dayElement.textContent = prevMonthLastDay - i;
+        calendarDaysGrid.appendChild(dayElement);
+    }
+
+    // Días del mes actual
+    for (let i = 1; i <= lastDayOfMonth.getDate(); i++) {
+        const dayElement = document.createElement('div');
+        dayElement.className = 'calendar-day current-month';
+        dayElement.textContent = i;
+
+        const fullDate = new Date(year, month, i);
+        const dateKey = formatDate(fullDate);
+
+        // Marcar el día de hoy
+        if (isSameDay(fullDate, new Date())) {
+            dayElement.classList.add('today');
+        }
+
+        // Marcar si tiene eventos
+        if (calendarEvents[dateKey] && calendarEvents[dateKey].trim() !== '') {
+            dayElement.classList.add('has-event');
+        }
+
+        // Marcar si es el día seleccionado
+        if (selectedCalendarDate && isSameDay(fullDate, selectedCalendarDate)) {
+            dayElement.classList.add('selected');
+            selectedDateDisplay.textContent = fullDate.toLocaleDateString('es-ES', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
+            eventNotesInput.value = calendarEvents[dateKey] || '';
+        }
+
+        dayElement.addEventListener('click', () => {
+            selectedCalendarDate = fullDate;
+            renderCalendar(); // Re-render para resaltar el día seleccionado
+        });
+
+        calendarDaysGrid.appendChild(dayElement);
+    }
+
+    // Días del mes siguiente para rellenar el final
+    const totalDaysDisplayed = startDayOfWeek + lastDayOfMonth.getDate();
+    const remainingDays = 42 - totalDaysDisplayed; // 6 filas * 7 días = 42 celdas
+    for (let i = 1; i <= remainingDays; i++) {
+        const dayElement = document.createElement('div');
+        dayElement.className = 'calendar-day';
+        dayElement.textContent = i;
+        calendarDaysGrid.appendChild(dayElement);
+    }
+
+    // Si no hay fecha seleccionada, mostrar la fecha actual en el input de notas
+    if (!selectedCalendarDate) {
+        selectedDateDisplay.textContent = new Date().toLocaleDateString('es-ES', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
+        eventNotesInput.value = ''; // Limpiar notas si no hay día seleccionado
+    }
+}
+
+/**
+ * Formatea una fecha a 'YYYY-MM-DD'.
+ * @param {Date} date - Objeto de fecha.
+ * @returns {string} Fecha formateada.
+ */
+function formatDate(date) {
+    const year = date.getFullYear();
+    const month = (date.getMonth() + 1).toString().padStart(2, '0');
+    const day = date.getDate().toString().padStart(2, '0');
+    return `${year}-${month}-${day}`;
+}
+
+/**
+ * Compara si dos fechas son el mismo día (ignorando la hora).
+ * @param {Date} date1
+ * @param {Date} date2
+ * @returns {boolean}
+ */
+function isSameDay(date1, date2) {
+    return date1.getFullYear() === date2.getFullYear() &&
+           date1.getMonth() === date2.getMonth() &&
+           date1.getDate() === date2.getDate();
+}
 
 
 // Renderizar la malla curricular cuando la página se carga
