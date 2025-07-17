@@ -168,8 +168,7 @@ const finalCourseGradeSpan = document.getElementById('final-course-grade');
 const saveCourseDetailsButton = document.getElementById('save-course-details');
 const includeInGpaCheckbox = document.getElementById('include-in-gpa');
 
-// Referencias para los promedios y créditos
-const creditsCounterSpan = document.getElementById('credits-counter');
+// Referencias para los promedios
 const semesterGpaSpan = document.getElementById('semester-gpa');
 const overallGpaSpan = document.getElementById('overall-gpa');
 const calculateGpaButton = document.getElementById('calculate-gpa-button');
@@ -191,40 +190,8 @@ const resetCustomizationButton = document.getElementById('reset-customization');
 const bodyElement = document.body;
 const rootElement = document.documentElement; // Para variables CSS
 
-// Referencias del calendario
-const openCalendarButton = document.getElementById('open-calendar-button');
-const calendarModal = document.getElementById('calendar-modal');
-const closeCalendarModalButton = document.getElementById('close-calendar-modal');
-const prevMonthButton = document.getElementById('prev-month');
-const nextMonthButton = document.getElementById('next-month');
-const currentMonthYearDisplay = document.getElementById('current-month-year');
-const calendarDaysGrid = document.getElementById('calendar-days-grid');
-const selectedDateDisplay = document.getElementById('selected-date-display');
-const eventNotesInput = document.getElementById('event-notes-input');
-const saveEventButton = document.getElementById('save-event-button');
-
-// Variables del calendario
-let currentCalendarDate = new Date(); // Fecha actual para el calendario
-let calendarEvents = JSON.parse(localStorage.getItem('calendarEvents')) || {}; // { 'YYYY-MM-DD': 'Notas del evento' }
-let selectedCalendarDate = null; // La fecha seleccionada en el calendario
-
 // Variable para almacenar la materia actualmente seleccionada en el modal
 let currentCourseForModal = null;
-
-// Colores para los fondos de semestre (para que contrasten con los ramos)
-const semesterBackgroundColors = [
-    '#e0f7fa', // Light Cyan
-    '#f3e5f5', // Light Purple
-    '#fffde7', // Light Yellow
-    '#e8f5e9', // Light Green
-    '#fbe9e7', // Light Orange
-    '#e3f2fd', // Lighter Blue
-    '#fce4ec', // Lighter Pink
-    '#f1f8e9', // Very Light Green
-    '#ede7f6', // Very Light Purple
-    '#ffe0b2'  // Light Peach
-];
-
 
 // Cargar la configuración de personalización guardada
 loadCustomizationSettings();
@@ -290,41 +257,25 @@ function renderCurriculum() {
         years[semester.año].push(semester);
     });
 
-    let semesterColorIndex = 0; // Para ciclar los colores de fondo de los semestres
-
     for (const yearNum in years) {
         const yearContainer = document.createElement('div');
         yearContainer.className = 'year-container';
 
-        const yearHeader = document.createElement('div');
-        yearHeader.className = 'year-header';
-        yearHeader.dataset.year = yearNum; // Almacenar el año para el toggle
-
         const yearTitle = document.createElement('h2');
         yearTitle.className = 'year-title';
         yearTitle.textContent = `Año ${yearNum}`;
-        yearHeader.appendChild(yearTitle);
-
-        const toggleIcon = document.createElement('span');
-        toggleIcon.className = 'toggle-icon';
-        toggleIcon.textContent = '▶'; // Icono de flecha
-        yearHeader.appendChild(toggleIcon);
-
-        yearContainer.appendChild(yearHeader);
+        yearContainer.appendChild(yearTitle);
 
         const semestersInYearDiv = document.createElement('div');
         semestersInYearDiv.className = 'semesters-in-year';
         // Aplicar el número de columnas seleccionado
-        semestersInYearDiv.style.gridTemplateColumns = `repeat(${customizationSettings.semesterColumns}, 1fr)`;
+        semestersInYearDiv.style.gridTemplateColumns = `repeat(${semesterColumnsSelect.value}, 1fr)`;
 
 
         years[yearNum].forEach(semester => {
             // Crear un div para cada columna de semestre
             const semesterColumn = document.createElement('div');
             semesterColumn.className = 'semester-column';
-            // Asignar color de fondo único al semestre
-            semesterColumn.style.setProperty('--semester-bg-color', semesterBackgroundColors[semesterColorIndex % semesterBackgroundColors.length]);
-            semesterColorIndex++;
 
             // Crear el título del semestre
             const semesterSubtitle = document.createElement('h3');
@@ -345,8 +296,7 @@ function renderCurriculum() {
                 let isClickable = true; // Por defecto, las materias son clicables
 
                 const isElectiveOrCfg = course.tipo === 'electivo' || course.tipo === 'cfg';
-                // La restricción de año se aplica a cursos "normales"
-                const isYearRestricted = !isElectiveOrCfg && parseInt(yearNum) > (maxCompletedYear + 1);
+                const isYearUnlocked = parseInt(yearNum) <= (maxCompletedYear > 0 ? maxCompletedYear + 1 : 1); // Permite ver el siguiente año si hay algo completado
 
                 if (completedCourses[course.id]) {
                     statusClass = 'status-completed';
@@ -355,7 +305,7 @@ function renderCurriculum() {
                     statusClass = 'status-unavailable';
                     statusText = 'No Disponible (Requisitos)';
                     isClickable = false;
-                } else if (isYearRestricted) {
+                } else if (!isElectiveOrCfg && parseInt(yearNum) > (maxCompletedYear + 1)) {
                      // Restricción por año para cursos no electivos/CFG
                     statusClass = 'status-unavailable';
                     statusText = 'No Disponible (Año)';
@@ -411,14 +361,8 @@ function renderCurriculum() {
         });
         yearContainer.appendChild(semestersInYearDiv);
         curriculumGrid.appendChild(yearContainer);
-
-        // Añadir evento de click para expandir/colapsar el año
-        yearHeader.addEventListener('click', () => {
-            yearHeader.classList.toggle('expanded');
-        });
     }
     calculateSemesterAndOverallGPA(); // Recalcular promedios al renderizar
-    updateCreditsCounter(); // Actualizar contador de créditos
 }
 
 /**
@@ -651,23 +595,6 @@ function saveMallaCurricular() {
     localStorage.setItem('mallaCurricular', JSON.stringify(mallaCurricular));
 }
 
-/**
- * Calcula y actualiza el contador de créditos alcanzados.
- */
-function updateCreditsCounter() {
-    let totalCreditsAchieved = 0;
-    mallaCurricular.forEach(semester => {
-        semester.materias.forEach(course => {
-            const courseId = course.id;
-            const savedCourse = courseData[courseId] || {};
-            if (savedCourse.completed) { // Solo contar si el curso está marcado como completado
-                totalCreditsAchieved += course.creditos;
-            }
-        });
-    });
-    creditsCounterSpan.textContent = totalCreditsAchieved;
-}
-
 
 /**
  * Calcula y muestra el promedio semestral y el promedio general de carrera.
@@ -840,8 +767,6 @@ function loadCustomizationSettings() {
     rootElement.style.setProperty('--secondary-color', customizationSettings.secondaryColor);
     rootElement.style.setProperty('--border-radius', `${customizationSettings.borderRadius}px`);
     rootElement.style.setProperty('--font-family', customizationSettings.fontFamily);
-    rootElement.style.setProperty('--semester-columns', customizationSettings.semesterColumns);
-
 
     // Aplicar sombras
     let shadowBase = 'none';
@@ -986,147 +911,9 @@ semesterColumnsSelect.addEventListener('change', (e) => {
 
 resetCustomizationButton.addEventListener('click', () => {
     localStorage.removeItem('customizationSettings');
-    localStorage.removeItem('mallaCurricular'); // También restablecer la malla a la original
-    localStorage.removeItem('courseData'); // Y los datos de los cursos
     customizationSettings = { ...defaultCustomizationSettings }; // Reset to default
-    mallaCurricular = JSON.parse(JSON.stringify(defaultMallaCurricular)); // Deep copy to reset
-    courseData = {}; // Clear course data
-    completedCourses = {}; // Clear completed courses
     applyCustomizationSettings();
-    renderCurriculum(); // Re-render everything
 });
-
-// --- Funcionalidad del Calendario ---
-
-openCalendarButton.addEventListener('click', () => {
-    calendarModal.classList.remove('hidden');
-    renderCalendar();
-});
-
-closeCalendarModalButton.addEventListener('click', () => {
-    calendarModal.classList.add('hidden');
-});
-
-prevMonthButton.addEventListener('click', () => {
-    currentCalendarDate.setMonth(currentCalendarDate.getMonth() - 1);
-    renderCalendar();
-});
-
-nextMonthButton.addEventListener('click', () => {
-    currentCalendarDate.setMonth(currentCalendarDate.getMonth() + 1);
-    renderCalendar();
-});
-
-saveEventButton.addEventListener('click', () => {
-    if (selectedCalendarDate) {
-        const dateKey = formatDate(selectedCalendarDate);
-        calendarEvents[dateKey] = eventNotesInput.value;
-        localStorage.setItem('calendarEvents', JSON.stringify(calendarEvents));
-        renderCalendar(); // Re-render para mostrar el punto de evento
-    }
-});
-
-/**
- * Renderiza el calendario para el mes y año actuales.
- */
-function renderCalendar() {
-    calendarDaysGrid.innerHTML = '';
-    currentMonthYearDisplay.textContent = currentCalendarDate.toLocaleString('es-ES', { month: 'long', year: 'numeric' });
-
-    const year = currentCalendarDate.getFullYear();
-    const month = currentCalendarDate.getMonth(); // 0-indexed
-
-    // Obtener el primer día del mes
-    const firstDayOfMonth = new Date(year, month, 1);
-    // Obtener el último día del mes
-    const lastDayOfMonth = new Date(year, month + 1, 0);
-
-    // Calcular el día de la semana del primer día (0=Dom, 1=Lun...)
-    const startDayOfWeek = firstDayOfMonth.getDay();
-
-    // Días del mes anterior para rellenar el inicio
-    const prevMonthLastDay = new Date(year, month, 0).getDate();
-    for (let i = startDayOfWeek - 1; i >= 0; i--) {
-        const dayElement = document.createElement('div');
-        dayElement.className = 'calendar-day';
-        dayElement.textContent = prevMonthLastDay - i;
-        calendarDaysGrid.appendChild(dayElement);
-    }
-
-    // Días del mes actual
-    for (let i = 1; i <= lastDayOfMonth.getDate(); i++) {
-        const dayElement = document.createElement('div');
-        dayElement.className = 'calendar-day current-month';
-        dayElement.textContent = i;
-
-        const fullDate = new Date(year, month, i);
-        const dateKey = formatDate(fullDate);
-
-        // Marcar el día de hoy
-        if (isSameDay(fullDate, new Date())) {
-            dayElement.classList.add('today');
-        }
-
-        // Marcar si tiene eventos
-        if (calendarEvents[dateKey] && calendarEvents[dateKey].trim() !== '') {
-            dayElement.classList.add('has-event');
-        }
-
-        // Marcar si es el día seleccionado
-        if (selectedCalendarDate && isSameDay(fullDate, selectedCalendarDate)) {
-            dayElement.classList.add('selected');
-            selectedDateDisplay.textContent = fullDate.toLocaleDateString('es-ES', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
-            eventNotesInput.value = calendarEvents[dateKey] || '';
-        }
-
-        dayElement.addEventListener('click', () => {
-            selectedCalendarDate = fullDate;
-            renderCalendar(); // Re-render para resaltar el día seleccionado
-        });
-
-        calendarDaysGrid.appendChild(dayElement);
-    }
-
-    // Días del mes siguiente para rellenar el final
-    const totalDaysDisplayed = startDayOfWeek + lastDayOfMonth.getDate();
-    const remainingDays = 42 - totalDaysDisplayed; // 6 filas * 7 días = 42 celdas
-    for (let i = 1; i <= remainingDays; i++) {
-        const dayElement = document.createElement('div');
-        dayElement.className = 'calendar-day';
-        dayElement.textContent = i;
-        calendarDaysGrid.appendChild(dayElement);
-    }
-
-    // Si no hay fecha seleccionada, mostrar la fecha actual en el input de notas
-    if (!selectedCalendarDate) {
-        selectedDateDisplay.textContent = new Date().toLocaleDateString('es-ES', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
-        eventNotesInput.value = ''; // Limpiar notas si no hay día seleccionado
-    }
-}
-
-/**
- * Formatea una fecha a 'YYYY-MM-DD'.
- * @param {Date} date - Objeto de fecha.
- * @returns {string} Fecha formateada.
- */
-function formatDate(date) {
-    const year = date.getFullYear();
-    const month = (date.getMonth() + 1).toString().padStart(2, '0');
-    const day = date.getDate().toString().padStart(2, '0');
-    return `${year}-${month}-${day}`;
-}
-
-/**
- * Compara si dos fechas son el mismo día (ignorando la hora).
- * @param {Date} date1
- * @param {Date} date2
- * @returns {boolean}
- */
-function isSameDay(date1, date2) {
-    return date1.getFullYear() === date2.getFullYear() &&
-           date1.getMonth() === date2.getMonth() &&
-           date1.getDate() === date2.getDate();
-}
 
 
 // Renderizar la malla curricular cuando la página se carga
